@@ -1,0 +1,55 @@
+[production]
+phpSettings.display_startup_errors = 0
+phpSettings.display_errors = 0
+includePaths.library = APPLICATION_PATH "/../library"
+bootstrap.path = APPLICATION_PATH "/Bootstrap.php"
+bootstrap.class = "Bootstrap"
+appnamespace = "Application"
+
+application_version = "1.0.0"
+application_url = "http://www.darkhorse.com/"
+application_name = "Dark Horse"
+
+resources.frontController.controllerDirectory = APPLICATION_PATH "/controllers"
+resources.frontController.params.displayExceptions = 0
+
+default_time_zone = "America/Los_Angeles"
+
+resources.db.adapter = ""
+resources.db.params.host = ""
+resources.db.params.port =
+resources.db.params.dbname = ""
+resources.db.params.username = ""
+resources.db.params.password = ""
+
+session.lifetime = 7200
+session.idletimeout = 600
+
+mail.system_address = ""
+mail.server = ""
+mail.user_name = ""
+mail.password = ""
+
+;Modular suport
+resources.frontController.moduleDirectory = APPLICATION_PATH "/modules"
+resources.modules[] =
+resources.frontController.defaultModule = "default"
+
+;View/Layout Settings
+resources.view.encoding = "UTF-8"
+
+[staging : production]
+
+[testing : production]
+phpSettings.display_startup_errors = 1
+phpSettings.display_errors = 1
+resources.frontController.params.displayExceptions = 1
+
+[development : testing]
+resources.db.params.dbname = ""
+resources.db.params.host = ""
+resources.db.adapter = "pdo_mysql"
+resources.db.params.port =
+resources.db.params.username = ""
+resources.db.params.password = ""
+
