@@ -17,6 +17,7 @@
             <ul class="nav navbar-nav">
                 <?php if(Zend_Registry::get(SESSION)->userTypeId == USER_TYPE_ADMIN) { ?>
                     <li <?= $url=='/default/users/index'?'class="active"':''; ?>><a href="/users">Users</a></li>
+                    <li <?= $url=='/default/customer/index'?'class="active"':''; ?>><a href="/customer">Customers</a></li>
                 <?php } elseif(Zend_Registry::get(SESSION)->userTypeId == USER_TYPE_EMPLOYEE) { ?>
 
                 <?php } ?>

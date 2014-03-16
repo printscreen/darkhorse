@@ -10,7 +10,7 @@ class Form_User extends Darkhorse_Form
               ->addFilter('StringTrim')
               ->addValidator('NotEmpty',true)
               ->addValidator('Digits')
-              ->addErrorMessage('Not a valid location id');
+              ->addErrorMessage('Not a valid user id');
         $this->addElement($userId);
 
         $firstName = new Zend_Form_Element_Text('firstName');

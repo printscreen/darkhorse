@@ -39,6 +39,7 @@ class UsersController extends Darkhorse_Controller_Action
     {
         $form = new Form_User();
         $success = false;
+        $userId = null;
         if ($form->isValid($this->getRequest()->getParams())) {
             $user = new Model_User(array(
                 'userId' => $form->getElement('userId')->getValue()
