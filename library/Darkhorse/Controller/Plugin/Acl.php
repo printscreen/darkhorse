@@ -15,7 +15,6 @@ class Darkhorse_Controller_Plugin_Acl extends Zend_Controller_Plugin_Abstract
                 , 'default:auth:reset-password'
                 , 'default:auth:logout'
                 , 'default:error:error'
-                , 'default:index:index'
                 );
     }
 
@@ -39,7 +38,44 @@ class Darkhorse_Controller_Plugin_Acl extends Zend_Controller_Plugin_Abstract
             return;
         }
 
-        //TODO
-        //write acl
+        $r = Zend_Controller_Action_HelperBroker::getStaticHelper('redirector');
+        if(!Zend_Auth::getInstance()->hasIdentity() || empty(Zend_Registry::get(SESSION)->userId)) {
+            if($request->isXMLHttpRequest()) {
+                header('Cache-Control: no-cache, must-revalidate');
+                header('Expires: Mon, 26 Jul 1997 05:00:00 GMT');
+                header('Content-type: text/json');
+                echo json_encode(array(
+                    'sessionExpired'=>true,
+                    'url' => '/auth/login',
+                    'message' => 'Your session has expired. Redirecting to the Login page.'
+                ));
+            } else {
+                $r->gotoUrl('/auth/login')->redirectAndExist();
+            }
+            exit;
+        } else {
+            //Check if the module-controller-action is valid
+            $dispatcher = Zend_Controller_Front::getInstance()->getDispatcher();
+            if ($dispatcher->isDispatchable($request)) {
+                $userAcl = new Model_Acl (
+                    array(
+                        'userId' => Zend_Registry::get(SESSION)->userId
+                      , 'userTypeId' => Zend_Registry::get(SESSION)->userTypeId
+                    )
+                );
+                $userAcl->initAcl();
+                $denied = true;
+                try {
+                    if($userAcl->isAllowed($userAcl->getUserTypeId(), $reqActionStr, 'access')) {
+                        $denied = false;
+                    }
+                } catch(Zend_Exception $e) {
+                    $denied = true;
+                }
+                if($denied) {
+                    throw new Inventory_Acl_Exception('Resource Denied');
+                }
+            }
+        }
     }
 }

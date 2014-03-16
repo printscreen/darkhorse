@@ -6,3 +6,4 @@ extras/documentation
 /public/.htaccess
 /application/configs/application.ini
 public/.DS_Store
+SQL/1.0/dummy_data.sql

@@ -11,6 +11,8 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         defined('SYSTEM_EMAIL_ADDRESS') || define('SYSTEM_EMAIL_ADDRESS', 'System_Email_Address');
         defined('SYSTEM_MAILER') || define('SYSTEM_MAILER', 'System_Emailer_Object');
                 defined('APPLICATION_URL') || define('APPLICATION_URL', 'Application_Url');
+        defined('USER_TYPE_ADMIN') || define('USER_TYPE_ADMIN', 1);
+        defined('USER_TYPE_EMPLOYEE') || define('USER_TYPE_EMPLOYEE', 2);
     }
 
     protected function _initAutoload()

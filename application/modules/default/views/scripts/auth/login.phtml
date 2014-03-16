@@ -1,0 +1,14 @@
+<div class="container">
+    <form class="form-signin" method="post" action="/auth/login">
+        <h2 class="form-signin-heading">Darkhorse login</h2>
+        <?php echo $this->form->getElement('email'); ?>
+        <?php echo $this->form->getElement('password'); ?>
+        <?php if($this->message) { ?>
+        <div class="alert alert-danger">
+            <?= $this->message ?>
+        </div>
+        <?php } ?>
+        <button class="btn btn-lg btn-primary btn-block" type="submit">Sign in</button>
+        <a href="/auth/forgot-password">Forgot your password?</a>
+   </form>
+</div>
