@@ -9,6 +9,7 @@ class Model_User extends Model_Base_Db
     protected $_lastName;
     protected $_email;
     protected $_userTypeId;
+    protected $_userTypeName;
     protected $_active;
     protected $_total;
 
@@ -45,6 +46,7 @@ class Model_User extends Model_Base_Db
         $this->_lastName = $record->last_name;
         $this->_email = $record->email;
         $this->_userTypeId = $record->user_type_id;
+        $this->_userTypeName = $record->user_type_name;
         $this->_active = $record->active;
         $this->_total = $record->total;
     }
@@ -74,14 +76,17 @@ class Model_User extends Model_Base_Db
 
         $sql = "
             SELECT
-                user_id
-              , first_name
-              , last_name
-              , email
-              , user_type_id
-              , active
+                u.user_id
+              , u.first_name
+              , u.last_name
+              , u.email
+              , u.user_type_id
+              , ut.name AS user_type_name
+              , u.active
               , 1 AS total
-            FROM users $where LIMIT 1
+            FROM users u
+            INNER JOIN user_type ut ON u.user_type_id = ut.user_type_id
+            $where LIMIT 1
         ";
         $query = $this->_db->prepare($sql);
         $query->execute($binds);
@@ -243,6 +248,7 @@ class Model_User extends Model_Base_Db
     public function getLastName(){return $this->_lastName;}
     public function getEmail(){return $this->_email;}
     public function getUserTypeId(){return $this->_userTypeId;}
+    public function getUserTypeName(){return $this->_userTypeName;}
     public function getActive(){return $this->_active;}
     public function getTotal(){return $this->_total;}
 }

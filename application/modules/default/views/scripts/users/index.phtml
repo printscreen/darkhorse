@@ -1,0 +1,83 @@
+<table id="user-table" class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Email</th>
+            <th>User Type</th>
+            <th>Active</th>
+            <th><a href="#" id="add-user-button" class="edit-user-button">Add User</a></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div class="modal fade" id="edit-user-dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="edit-user-form">
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="firstName">First Name</label>
+                        <div class="controls col-lg-6">
+                            <input type="hidden" name="userId" />
+                            <input type="text" class="form-control" name="firstName" placeholder="First Name" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="lastName">Last Name</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="lastName" placeholder="Last Name" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="email">Email</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="email" placeholder="Email" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="password">Password</label>
+                        <div class="controls col-lg-6">
+                            <input type="password" class="form-control" name="password" placeholder="Password" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="userTypeId">User Type</label>
+                        <div class="controls col-lg-6">
+                            <select name="userTypeId" class="form-control" >
+                                <option value="">Select a value</option>
+                                <option value="1">Admin</option>
+                                <option value="2">Employee</option>
+                            </select>
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="active">Active</label>
+                        <div class="controls col-lg-6">
+                            <select name="active" class="form-control" >
+                                <option value="">Select a value</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-user-form">Save</button>
+            </div>
+        </div>
+    </div>
+</div>

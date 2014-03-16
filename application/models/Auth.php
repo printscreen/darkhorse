@@ -43,7 +43,7 @@ class Model_Auth extends Model_Base_Db implements Zend_Auth_Adapter_Interface
 
     public function isValidPassword()
     {
-        $query = $this->_db->prepare("SELECT EXISTS (SELECT true FROM users WHERE email = :email AND password = :password) AS auth ");
+        $query = $this->_db->prepare("SELECT EXISTS (SELECT true FROM users WHERE email = :email AND password = :password AND active) AS auth ");
         $query->execute(array(
               ':email'=>mysql_real_escape_string($this->_email)
             , ':password'=> Model_User::hashPassword($this->_password)

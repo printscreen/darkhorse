@@ -11,12 +11,12 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="#">MyStoragePal.com</a>
+            <a class="navbar-brand" href="#">Dark Horse</a>
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
                 <?php if(Zend_Registry::get(SESSION)->userTypeId == USER_TYPE_ADMIN) { ?>
-                    <li <?= $url=='/default/users/index'?'class="active"':''; ?>><a href="/home">Users</a></li>
+                    <li <?= $url=='/default/users/index'?'class="active"':''; ?>><a href="/users">Users</a></li>
                 <?php } elseif(Zend_Registry::get(SESSION)->userTypeId == USER_TYPE_EMPLOYEE) { ?>
 
                 <?php } ?>

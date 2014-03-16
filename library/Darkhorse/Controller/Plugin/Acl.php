@@ -73,7 +73,7 @@ class Darkhorse_Controller_Plugin_Acl extends Zend_Controller_Plugin_Abstract
                     $denied = true;
                 }
                 if($denied) {
-                    throw new Inventory_Acl_Exception('Resource Denied');
+                    throw new Darkhorse_Acl_Exception('Resource Denied');
                 }
             }
         }

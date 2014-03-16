@@ -30,6 +30,10 @@ INSERT INTO resource
     (name)
 VALUES
     ('default:index:index')
+,   ('default:users:index')
+,   ('default:users:view')
+,   ('default:users:edit')
+,   ('default:users:get-user')
 ;
 
 CREATE TABLE user_type_resource (
@@ -41,12 +45,5 @@ CREATE TABLE user_type_resource (
     FOREIGN KEY (resource_id) REFERENCES resource(resource_id),
     CONSTRAINT uc_user_type_id_resource_id UNIQUE (resource_id, user_type_id)
 );
-
-INSERT INTO user_type_resource
-    (resource_id, user_type_id)
-VALUES
-    (1,1),(1,2) -- default:index:index
-;
-
 
 COMMIT;
