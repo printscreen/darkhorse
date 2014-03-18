@@ -38,6 +38,10 @@ VALUES
 ,   ('default:customer:view')
 ,   ('default:customer:edit')
 ,   ('default:customer:get-customer')
+,   ('default:batch:index')
+,   ('default:batch:view')
+,   ('default:batch:edit')
+,   ('default:batch:get-batch')
 ;
 
 CREATE TABLE user_type_resource (
@@ -61,7 +65,11 @@ VALUES
     (6,1), -- default:customer:index
     (7,1), -- default:customer:view
     (8,1), -- default:customer:edit
-    (9,1) -- default:customer:get-customer
+    (9,1), -- default:customer:get-customer
+    (10,1), -- default:batch:index
+    (11,1), -- default:batch:view
+    (12,1), -- default:batch:edit
+    (13,1) -- default:batch:get-batch
 ;
 
 CREATE TABLE customer (
@@ -69,6 +77,25 @@ CREATE TABLE customer (
     name            VARCHAR(255)    NOT NULL UNIQUE,
     active          BOOLEAN         NOT NULL,
     PRIMARY KEY (customer_id)
+);
+
+CREATE TABLE batch (
+    batch_id        INT(10)         NOT NULL auto_increment,
+    insert_ts       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    name            VARCHAR(255)    NOT NULL,
+    customer_id     INT(10)         NOT NULL,
+    contact_name    VARCHAR(255)    NULL,
+    contact_phone   VARCHAR(255)    NULL,
+    contact_email   VARCHAR(255)    NULL,
+    street          VARCHAR(255)    NULL,
+    suite_apt       VARCHAR(255)    NULL,
+    city            VARCHAR(255)    NULL,
+    state           VARCHAR(255)    NULL,
+    postal_code     VARCHAR(255)    NULL,
+    active          BOOLEAN         NOT NULL,
+    PRIMARY KEY (batch_id),
+    FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
+    CONSTRAINT uc_customer_name UNIQUE (name, customer_id)
 );
 
 COMMIT;

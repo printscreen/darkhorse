@@ -80,13 +80,13 @@ var Darkhorse = function (parameters) {
 Darkhorse.prototype.modules = {};
 
 
-$(document).ready(function(){
+$(document).ready(function (){
     var darkhorse = new Darkhorse();
     darkhorse.dispatch();
 });
 
 //Extensions
-$.fn.serializeObject = function() {
+$.fn.serializeObject = function () {
     var o = {};
     var a = this.serializeArray();
     $.each(a, function() {
@@ -101,7 +101,7 @@ $.fn.serializeObject = function() {
     });
     return o;
 };
-$.fn.clearForm = function() {
+$.fn.clearForm = function () {
     $(this)
     .trigger('reset')
     .find('input[type="hidden"], input[type="password"], input[type="file"], select, textarea')
@@ -111,13 +111,18 @@ $.fn.clearForm = function() {
     $(this).clearFormErrors();
     return $(this);
 };
-$.fn.clearFormErrors = function() {
+$.fn.clearFormErrors = function () {
     $.each($(this).find(':input'), function(key,val){
         $(val).closest('.form-group').removeClass('has-error');
         $(val).closest('.form-group').find('.help-block').html('');
     });
     return $(this);
 };
-String.prototype.ucfirst = function() {
+String.prototype.ucfirst = function () {
     return this.charAt(0).toUpperCase() + this.slice(1);
+}
+String.prototype.formatFromTimestamp = function () {
+    var t = this.split(/[- :]/),
+        date = new Date(t[0], t[1] - 1, t[2], t[3] || 0, t[4] || 0, t[5] || 0);
+    return date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear();
 }

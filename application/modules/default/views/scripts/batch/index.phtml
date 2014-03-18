@@ -1,0 +1,128 @@
+<table id="batch-table" class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <td colspan="12">
+                <form class="form-inline">
+                    <div class="form-group">
+                        <select class="form-control" id="select-customer"></select>
+                    </div>
+                    <div class="checkbox hide">
+                        <label>
+                            <input type="checkbox" checked="checked" id="show-active">&nbsp;&nbsp;Show only active
+                        </label>
+                    </div>
+                </form>
+            </td>
+        </tr>
+        <tr>
+            <th>Name</th>
+            <th>Created</th>
+            <th>Contact</th>
+            <th>Phone</th>
+            <th>Email</th>
+            <th>Street</th>
+            <th>Suite/Apt.</th>
+            <th>City</th>
+            <th>State</th>
+            <th>Zip</th>
+            <th>Active</th>
+            <th><a href="#" id="add-batch-button" class="edit-batch-button">Add Batch</a></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div class="modal fade" id="edit-batch-dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="edit-batch-form">
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="name">Name</label>
+                        <div class="controls col-lg-6">
+                            <input type="hidden" name="batchId" />
+                            <input type="hidden" name="customerId" />
+                            <input type="text" class="form-control" name="name" placeholder="Name" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="contactName">Contact Name</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="contactName" placeholder="Contact Name (optional)" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="contactPhone">Contact Phone</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="contactPhoneNumber" placeholder="Contact Phone (optional)" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="contactEmail">Contact Email</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="contactEmail" placeholder="Contact Email (optional)" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="street">Street</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="street" placeholder="Street (optional)" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="contactEmail">Suite/Apt</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="suiteApt" placeholder="Suite Apt #(optional)" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="city">City</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="city" placeholder="City (optional)" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="state">State</label>
+                        <div class="controls col-lg-6">
+                            <?php echo $this->partial('partials/state-select.phtml', 'default'); ?>
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="contactEmail">Zip</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="postalCode" placeholder="Zip (optional)" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="active">Active</label>
+                        <div class="controls col-lg-6">
+                            <select name="active" class="form-control" >
+                                <option value="">Select a value</option>
+                                <option value="true">Yes</option>
+                                <option value="false">No</option>
+                            </select>
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-batch-form">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
