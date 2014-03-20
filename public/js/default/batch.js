@@ -77,18 +77,38 @@ Darkhorse.prototype.modules.batch = function (base, index) {
         var html = '';
         $.each(batches || [], function(key, val) {
             html += '<tr>' +
-                        '<td>' + val.name + '</td>' +
+                        '<td>' + val.name +
+                            '<a href="#" class="pull-right detail-row">' +
+                                'Details <span class="glyphicon glyphicon-chevron-up"></span>' +
+                            '</a>' +
+                        '</td>' +
                         '<td>' + val.insertTs.formatFromTimestamp() + '</td>' +
-                        '<td>' + val.contactName + '</td>' +
-                        '<td>' + val.contactPhoneNumber + '</td>' +
-                        '<td>' + val.contactEmail + '</td>' +
-                        '<td>' + val.street + '</td>' +
-                        '<td>' + val.suiteApt + '</td>' +
-                        '<td>' + val.city + '</td>' +
-                        '<td>' + val.state + '</td>' +
-                        '<td>' + val.postalCode + '</td>' +
                         '<td>' + (val.active === '1' ? 'Yes' : 'No') + '</td>' +
                         '<td><a href="#" class="edit-batch-button" data-batch-id="' + val.batchId + '">Edit</a></td>' +
+                    '</tr>' +
+                    '<tr style="display:none;">' +
+                        '<td colspan="4">' +
+                            '<div class="well">' +
+                                '<div class="row">' +
+                                    '<div class="col-md-6">' +
+                                        '<address>' +
+                                            '<strong>Return Address</strong><br>' +
+                                            val.street + (val.street.length > 0 ? '<br>' : '') +
+                                            val.suiteApt + (val.suiteApt.length > 0 ? '<br>' : '') +
+                                            val.city + ', ' + val.state + ' ' + val.postalCode + '<br>' +
+                                        '</address>' +
+                                    '</div>' +
+                                    '<div class="col-md-6">' +
+                                        '<address>' +
+                                            '<strong>Contact Information</strong><br>' +
+                                            val.contactName + '<br>' +
+                                            '<abbr title="Phone">P: </abbr>' + val.contactPhoneNumber + '<br>' +
+                                            '<abbr title="Email">Email: </abbr>' + val.contactEmail +
+                                        '</address>' +
+                                    '</div>' +
+                                '</div>' +
+                            '</div>' +
+                        '</td>' +
                     '</tr>';
         });
         $('#batch-table tbody').html(html);
@@ -239,6 +259,19 @@ Darkhorse.prototype.modules.batch = function (base, index) {
                     offset,
                     limit
                 );
+        });
+    };
+
+    listeners.rowDetail = function () {
+        $('#batch-table tbody').on('click', '.detail-row', function () {
+            var row = $(this).closest('tr').next('tr');
+            if(row.is(':hidden')) {
+                $(this).html('Hide' + ' <span class="glyphicon glyphicon-chevron-down"></span>');
+                row.show();
+            } else {
+                $(this).html('Details' + ' <span class="glyphicon glyphicon-chevron-up"></span>');
+                row.hide();
+            }
         });
     };
 
