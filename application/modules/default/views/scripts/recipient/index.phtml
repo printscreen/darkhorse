@@ -1,0 +1,159 @@
+<table id="recipient-table" class="table table-bordered table-striped table-hover">
+    <thead>
+        <tr>
+            <td colspan="7">
+                <div id="recipient-form">
+                    <form class="form-inline" role="form">
+                        <div class="form-group">
+                            <select class="form-control" name="customer">
+                                <option value="">Please select a customer</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" disabled="disabled" name="batch">
+                                <option value="">Please select a batch</option>
+                            </select>
+                        </div>
+                        <div class="form-group pull-right">
+                            <a href="#" class="btn btn-primary" disabled="disabled" id="upload-csv-link">Upload CSV</a>
+                        </div>
+                    </form>
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <th>Email</th>
+            <th>First Name</th>
+            <th>Last Name</th>
+            <th>Verified</th>
+            <th>Ship Date</th>
+            <th>Tracking #</th>
+            <th><a href="#" id="add-recipient">Add Recipient</a></th>
+        </tr>
+    </thead>
+    <tbody>
+    </tbody>
+</table>
+<div class="modal fade" id="upload-csv-dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Upload CSV</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="edit-batch-form">
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="contactName">File</label>
+                        <div class="controls col-lg-6">
+                            <button class="btn" id="upload-file">Select a File</button>
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="upload-csv-form">Upload</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="edit-recipient-dialog">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title"></h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal" id="edit-recipient-form">
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="email">Email</label>
+                        <div class="controls col-lg-6">
+                            <input type="hidden" name="batchId" />
+                            <input type="hidden" name="recipientId" />
+                            <input type="text" class="form-control" name="email" placeholder="Email (optional)" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="firstName">First Name</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="firstName" placeholder="First Name" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="lastName">Last Name</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="lastName" placeholder="Last Name" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="addressLineOne">Address Line</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="addressLineOne" placeholder="Address Line" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="addressLineTwo">Address Line #2</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="addressLineTwo" placeholder="Address Line #2 (optional)" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="city">City</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="city" placeholder="City" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="state">State</label>
+                        <div class="controls col-lg-6">
+                            <?php echo $this->partial('partials/state-select.phtml', 'default'); ?>
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="contactEmail">Zip</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="postalCode" placeholder="Zip" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="shirt">Shirt</label>
+                        <div class="controls col-lg-2">
+                            <input type="text" class="form-control" name="shirtSex" placeholder="Sex" />
+                            <p class="help-block"></p>
+                        </div>
+                        <div class="controls col-lg-2">
+                            <input type="text" class="form-control" name="shirtSize" placeholder="Size" />
+                            <p class="help-block"></p>
+                        </div>
+                        <div class="controls col-lg-2">
+                            <input type="text" class="form-control" name="shirtType" placeholder="Type" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label" for="quantity">Quantity</label>
+                        <div class="controls col-lg-6">
+                            <input type="text" class="form-control" name="quantity" placeholder="Quantity" />
+                            <p class="help-block"></p>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="save-recipient-form">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
