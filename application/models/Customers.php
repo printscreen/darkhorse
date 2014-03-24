@@ -52,16 +52,13 @@ class Model_Customers extends Model_Base_Db
         }
         $query->execute();
 
-        $result = $query->fetchAll();
-
         $this->_customers = array();
-        if(!empty($result)) {
-            foreach($result as $key => $value) {
-                $customer = new Model_Customer();
-                $customer->loadRecord($value);
-                $this->_customers[] = $customer;
-            }
+        while($result = $query->fetch()) {
+            $customer = new Model_Customer();
+            $customer->loadRecord($result);
+            $this->_customers[] = $customer;
         }
+
         return $this->_customers;
     }
 

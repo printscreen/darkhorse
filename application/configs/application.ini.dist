@@ -21,6 +21,7 @@ resources.db.params.port =
 resources.db.params.dbname = ""
 resources.db.params.username = ""
 resources.db.params.password = ""
+resources.db.params.driver_options.1001 = true;
 
 session.lifetime = 7200
 session.idletimeout = 600

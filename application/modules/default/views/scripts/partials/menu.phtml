@@ -15,14 +15,14 @@
         </div>
         <div class="collapse navbar-collapse">
             <ul class="nav navbar-nav">
-                <?php if(Zend_Registry::get(SESSION)->userTypeId == USER_TYPE_ADMIN) { ?>
-                    <li <?= $url=='/default/users/index'?'class="active"':''; ?>><a href="/users">Users</a></li>
-                    <li <?= $url=='/default/customer/index'?'class="active"':''; ?>><a href="/customer">Customers</a></li>
-                    <li <?= $url=='/default/batch/index'?'class="active"':''; ?>><a href="/batch">Batches</a></li>
-                <?php } elseif(Zend_Registry::get(SESSION)->userTypeId == USER_TYPE_EMPLOYEE) { ?>
+            <?php if(Zend_Registry::get(SESSION)->userTypeId == USER_TYPE_ADMIN) { ?>
+                <li <?= $url=='/default/users/index'?'class="active"':''; ?>><a href="/users">Users</a></li>
+                <li <?= $url=='/default/customer/index'?'class="active"':''; ?>><a href="/customer">Customers</a></li>
+                <li <?= $url=='/default/batch/index'?'class="active"':''; ?>><a href="/batch">Batches</a></li>
+                <li <?= $url=='/default/recipient/index'?'class="active"':''; ?>><a href="/recipient">Recipients</a></li>
+            <?php } elseif(Zend_Registry::get(SESSION)->userTypeId == USER_TYPE_EMPLOYEE) { ?>
 
-                <?php } ?>
-
+            <?php } ?>
                 <li><a href="/auth/logout">Logout</a></li>
             </ul>
 

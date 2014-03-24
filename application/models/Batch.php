@@ -230,7 +230,7 @@ class Model_Batch extends Model_Base_Db
     public function setActive($active){$this->_active = $active; return $this;}
 
     //Getters
-    public function getbatchId(){return $this->_batchId;}
+    public function getBatchId(){return $this->_batchId;}
     public function getInsertTs(){return $this->_insertTs;}
     public function getName(){return $this->_name;}
     public function getCustomerId(){return $this->_customerId;}

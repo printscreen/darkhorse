@@ -6,3 +6,6 @@ body {
 .detail-row:focus {
     outline: none;
 }
+body.modal-open {
+    overflow: auto;
+}

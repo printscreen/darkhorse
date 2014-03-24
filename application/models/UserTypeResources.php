@@ -36,16 +36,14 @@ class Model_UserTypeResources extends Model_Base_Db
         $query->bindParam(':userTypeId', $userTypeId, PDO::PARAM_INT);
         $query->execute();
 
-        $result = $query->fetchAll();
-
         $this->_userTypeResources = array();
-        if(!empty($result)) {
-            foreach($result as $key => $value) {
-                $typeResource = new Model_UserTypeResource();
-                $typeResource->loadRecord($value);
-                $this->_userTypeResources[] = $typeResource;
-            }
+
+        while($result = $query->fetch()) {
+            $typeResource = new Model_UserTypeResource();
+            $typeResource->loadRecord($result);
+            $this->_userTypeResources[] = $typeResource;
         }
+
         return $this->_userTypeResources;
     }
 }

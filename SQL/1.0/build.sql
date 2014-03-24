@@ -42,6 +42,11 @@ VALUES
 ,   ('default:batch:view')
 ,   ('default:batch:edit')
 ,   ('default:batch:get-batch')
+,   ('default:recipient:index')
+,   ('default:recipient:upload')
+,   ('default:recipient:view')
+,   ('default:recipient:edit')
+,   ('default:recipient:get-recipient')
 ;
 
 CREATE TABLE user_type_resource (
@@ -69,7 +74,12 @@ VALUES
     (10,1), -- default:batch:index
     (11,1), -- default:batch:view
     (12,1), -- default:batch:edit
-    (13,1) -- default:batch:get-batch
+    (13,1), -- default:batch:get-batch
+    (14,1), -- default:recipient:index
+    (15,1), -- default:recipient:upload
+    (16,1), -- default:recipient:view
+    (17,1), -- default:recipient:edit
+    (18,1) -- default:recipient:get
 ;
 
 CREATE TABLE customer (
@@ -81,9 +91,9 @@ CREATE TABLE customer (
 
 CREATE TABLE batch (
     batch_id        INT(10)         NOT NULL auto_increment,
+    customer_id     INT(10)         NOT NULL,
     insert_ts       TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     name            VARCHAR(255)    NOT NULL,
-    customer_id     INT(10)         NOT NULL,
     contact_name    VARCHAR(255)    NULL,
     contact_phone   VARCHAR(255)    NULL,
     contact_email   VARCHAR(255)    NULL,
@@ -96,6 +106,29 @@ CREATE TABLE batch (
     PRIMARY KEY (batch_id),
     FOREIGN KEY (customer_id) REFERENCES customer(customer_id),
     CONSTRAINT uc_customer_name UNIQUE (name, customer_id)
+);
+
+CREATE TABLE recipient (
+    recipient_id        INT(10)         NOT NULL auto_increment,
+    batch_id            INT(10)         NOT NULL,
+    email               VARCHAR(255)    NULL,
+    first_name          VARCHAR(255)    NOT NULL,
+    last_name           VARCHAR(255)    NOT NULL,
+    address_line_one    VARCHAR(255)    NOT NULL,
+    address_line_two    VARCHAR(255)    NULL,
+    city                VARCHAR(255)    NOT NULL,
+    state               VARCHAR(255)    NOT NULL,
+    postal_code         VARCHAR(255)    NOT NULL,
+    verified_address    BOOLEAN         NOT NULL DEFAULT false,
+    insert_ts           TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    ship_ts             TIMESTAMP       NULL,
+    tracking_number     VARCHAR(255)    NULL,
+    shirt_sex           VARCHAR(255)    NOT NULL,
+    shirt_size          VARCHAR(255)    NOT NULL,
+    shirt_type          VARCHAR(255)    NOT NULL,
+    quantity            INT(10)         NOT NULL,
+    PRIMARY KEY (recipient_id),
+    FOREIGN KEY (batch_id) REFERENCES batch(batch_id)
 );
 
 COMMIT;

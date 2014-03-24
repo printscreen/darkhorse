@@ -69,15 +69,12 @@ class Model_Batches extends Model_Base_Db
         $this->bind($query, $binds);
         $query->execute();
 
-        $result = $query->fetchAll();
-
         $this->_batches = array();
-        if(!empty($result)) {
-            foreach($result as $key => $value) {
-                $batch = new Model_Batch();
-                $batch->loadRecord($value);
-                $this->_batches[] = $batch;
-            }
+
+        while($result = $query->fetch()) {
+            $batch = new Model_Batch();
+            $batch->loadRecord($result);
+            $this->_batches[] = $batch;
         }
         return $this->_batches;
     }

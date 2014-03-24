@@ -57,15 +57,12 @@ class Model_Users extends Model_Base_Db
         }
         $query->execute();
 
-        $result = $query->fetchAll();
-
         $this->_users = array();
-        if(!empty($result)) {
-            foreach($result as $key => $value) {
-                $user = new Model_User();
-                $user->loadRecord($value);
-                $this->_users[] = $user;
-            }
+
+        while($result = $query->fetch()) {
+            $user = new Model_User();
+            $user->loadRecord($result);
+            $this->_users[] = $user;
         }
         return $this->_users;
     }
