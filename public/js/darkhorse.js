@@ -104,8 +104,11 @@ $.fn.serializeObject = function () {
 $.fn.clearForm = function () {
     $(this)
     .trigger('reset')
-    .find('input[type="hidden"], input[type="password"], input[type="file"], select, textarea')
+    .find('input[type="hidden"], input[type="password"], input[type="file"], textarea')
     .val('')
+    .end()
+    .find('select option:first-child')
+    .attr('selected', 'selected')
     .end()
     .find('input:radio, input:checkbox').removeAttr('checked').removeAttr('selected');
     $(this).clearFormErrors();
@@ -126,3 +129,14 @@ String.prototype.formatFromTimestamp = function () {
         date = new Date(t[0], t[1] - 1, t[2], t[3] || 0, t[4] || 0, t[5] || 0);
     return date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear();
 }
+$.fn.delayKeyup = function(callback, ms){
+    var timer = 0;
+    var el = $(this);
+    $(this).keyup(function(){
+    clearTimeout (timer);
+    timer = setTimeout(function(){
+        callback(el)
+        }, ms);
+    });
+    return $(this);
+};

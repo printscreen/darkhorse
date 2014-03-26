@@ -14,7 +14,7 @@ class Model_Recipients extends Model_Base_Db
         $this->_recipients = array();
     }
 
-    public function getRecipients($batchId, $sort = null, $offset = null, $limit = null)
+    public function getRecipients($batchId, $searchField = null, $searchText = null, $sort = null, $offset = null, $limit = null)
     {
         $where = '';
         $binds = array();
@@ -23,6 +23,12 @@ class Model_Recipients extends Model_Base_Db
             $binds[':batchId'] = array('value' => $batchId, 'type' => PDO::PARAM_INT);
         } else {
             throw new Zend_Exception('No batch id supplied');
+        }
+        $field = trim($searchField);
+        $text = trim($searchText);
+        if(!empty($field) && !empty($text)) {
+            $where .= ' AND r.'.$field.' LIKE :'.$field;
+            $binds[':'.$field] = array('value' => $text.'%', 'type' => PDO::PARAM_STR);
         }
 
         $sql = "SELECT

@@ -9,3 +9,7 @@ body {
 body.modal-open {
     overflow: auto;
 }
+#recipient-table .pagination {
+    display:inline;
+    margin: 0;
+}

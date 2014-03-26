@@ -9,6 +9,9 @@ class RecipientController extends Darkhorse_Controller_Action
 
         $this->view->headScript()
         ->prependFile('/js/default/recipient.js', $type = 'text/javascript' );
+
+        $this->view->headScript()
+        ->prependFile('/js/library/paginate.js', $type = 'text/javascript' );
     }
 
     public function uploadAction()
@@ -35,6 +38,8 @@ class RecipientController extends Darkhorse_Controller_Action
         $recipients = new Model_Recipients();
         $recipients->getRecipients(
             $this->getRequest()->getParam('batchId')
+          , $this->getRequest()->getParam('searchField')
+          , $this->getRequest()->getParam('searchText')
           , $this->getRequest()->getParam('sort')
           , $this->getRequest()->getParam('offset')
           , $this->getRequest()->getParam('limit')

@@ -5,8 +5,9 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         listeners = {},
         sort = 3,
         offset = 0,
-        limit = 20,
-        active = true,
+        limit = 10,
+        searchField = null,
+        searchText = null,
         uploader = null;
 
     methods.getCustomers = function (s, o, l) {
@@ -14,11 +15,6 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
             url: '/customer/view',
             type: 'POST',
             dataType: 'json',
-            data: {
-                sort: s,
-                offset: o,
-                limit: l
-            },
             success: function(data) {
                 methods.populateCustomerDropDown(data.customers);
             },
@@ -28,17 +24,14 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         });
     }
 
-    methods.getBatches = function (customerId, active, s, o, l) {
+    methods.getBatches = function (customerId, active) {
         $.ajax({
             url: '/batch/view',
             type: 'POST',
             dataType: 'json',
             data: {
                 customerId: customerId,
-                active: active,
-                sort: s,
-                offset: o,
-                limit: l
+                active: active
             },
             success: function(data) {
                 methods.populateBatchDropDown(data.batches);
@@ -49,13 +42,15 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         });
     }
 
-    methods.getRecipients = function (batchId, s, o, l) {
+    methods.getRecipients = function (batchId, search, text, s, o, l) {
         $.ajax({
             url: '/recipient/view',
             type: 'POST',
             dataType: 'json',
             data: {
                 batchId: batchId,
+                searchField: search || $('select[name="search-by"]').val(),
+                searchText: text || $('input[name="search-text"]').val(),
                 sort: s,
                 offset: o,
                 limit: l
@@ -87,8 +82,10 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
     };
 
     methods.populateTable = function (recipients) {
-        var html = '';
+        var html = '',
+            total = 0;
         $.each(recipients || [], function(key, val) {
+            total = val.total;
             html += '<tr>' +
                         '<td>' + val.email +
                             '<a href="#" class="pull-right detail-row">' +
@@ -127,6 +124,14 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                         '</td>' +
                     '</tr>';
         });
+        if(html !== '') {
+            $('#recipient-table .table-tools').show();
+            $('#recipient-table .pagination').paginate({
+                total: total,
+                limit: limit,
+                offset: offset
+            });
+        }
         $('#recipient-table tbody').html(html);
     };
 
@@ -179,6 +184,8 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                 if(result.success) {
                     methods.getRecipients(
                         $('select[name="batch"]').val(),
+                        null,
+                        null,
                         sort,
                         offset,
                         limit
@@ -238,6 +245,8 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                 $('#upload-csv-dialog').modal('hide');
                 methods.getRecipients(
                     $('select[name="batch"]').val()
+                  , null
+                  , null
                   , sort = 1
                   , offset = 0
                   , limit = 20
@@ -319,10 +328,7 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                     .prop('disabled', false);
                 methods.getBatches(
                     $(this).val(),
-                    true,
-                    sort,
-                    offset,
-                    limit
+                    true
                 );
             }
         });
@@ -355,6 +361,10 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                 $('#upload-csv-dialog').modal('show');
             }
         });
+        $('#upload-csv-dialog').on('hide.bs.modal', function (event) {
+            uploader._clearInput();
+            $('#upload-file').next().html('');
+        });
     };
 
     listeners.editDialog = function () {
@@ -385,16 +395,64 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
     listeners.selectBatch = function () {
         $('select[name="batch"]').change(function () {
             $('#recipient-table tbody').html('');
+            $('#recipient-table .table-tools')
+                .hide()
+                .find('form')
+                .each(function (key, val) {
+                    $(val).clearForm();
+                });
             $('#upload-csv-link').attr('disabled', $(this).val() === '');
             if($(this).val() != '') {
                 methods.getRecipients(
                     $(this).val()
+                  , null
+                  , null
                   , sort
-                  , offset
+                  , offset = 0
                   , limit
                 );
             }
         });
+    };
+
+    listeners.page = function () {
+        $('ul.pagination').on('click', 'a[data-offset]', function () {
+            methods.getRecipients(
+                $('select[name="batch"]').val()
+              , null
+              , null
+              , sort
+              , offset = $(this).data('offset')
+              , limit
+            );
+        });
+    };
+
+    listeners.pageCount = function () {
+        $('select[name="page-count"]').change(function () {
+            limit = $(this).val();
+            methods.getRecipients(
+                $('select[name="batch"]').val()
+              , null
+              , null
+              , sort
+              , offset
+              , limit
+            );
+        });
+    };
+
+    listeners.filterTable = function () {
+        $('input[name="search-text"]').delayKeyup(function () {
+            methods.getRecipients(
+                $('select[name="batch"]').val()
+              , null
+              , null
+              , sort
+              , offset
+              , limit
+            );
+        }, 500);
     };
 
     this.dispatch = function () {
@@ -405,3 +463,10 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         });
     };
 };
+
+
+
+
+
+
+
