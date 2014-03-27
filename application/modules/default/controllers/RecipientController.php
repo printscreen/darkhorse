@@ -99,4 +99,24 @@ class RecipientController extends Darkhorse_Controller_Action
             'errors' => $form->getFormErrors()
         ));
     }
+
+    public function moveAction()
+    {
+        $form = new Form_MoveRecipient();
+        $success = false;
+        if ($form->isValid($this->getRequest()->getParams())) {
+            $recipients = new Model_Recipients();
+            $success = $recipients->moveRecipients(
+                $form->getElement('fromBatchId')->getValue()
+              , $form->getElement('toBatchId')->getValue()
+              , $form->getElement('who')->getValue()
+              , $form->getElement('recipientIds')->getValue()
+            );
+        }
+
+        $this->_helper->json(array(
+            'success' => $success,
+            'errors' => $form->getFormErrors()
+        ));
+    }
 }

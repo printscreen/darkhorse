@@ -38,7 +38,6 @@ jQuery.fn.paginate = function (parameters) {
             if(page < 1) {
                 continue;
             }
-            console.log(pages);
             if(page === currentPage) {
                html += '<li class="active"><a href="#">' + currentPage + '</a></li>';
             } else {

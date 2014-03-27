@@ -10,7 +10,7 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         searchText = null,
         uploader = null;
 
-    methods.getCustomers = function (s, o, l) {
+    methods.getCustomers = function () {
         $.ajax({
             url: '/customer/view',
             type: 'POST',
@@ -87,6 +87,7 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         $.each(recipients || [], function(key, val) {
             total = val.total;
             html += '<tr>' +
+                        '<td><input type="checkbox" class="move-recipient" value="' + val.recipientId + '" /></td>' +
                         '<td>' + val.email +
                             '<a href="#" class="pull-right detail-row">' +
                                 'Details <span class="glyphicon glyphicon-chevron-up"></span>' +
@@ -125,7 +126,7 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                     '</tr>';
         });
         if(html !== '') {
-            $('#recipient-table .table-tools').show();
+            $('#recipient-table .table-tools, #recipient-form button').show();
             $('#recipient-table .pagination').paginate({
                 total: total,
                 limit: limit,
@@ -161,12 +162,12 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         $('select[name="customer"]').html(html);
     };
 
-    methods.populateBatchDropDown = function (customers) {
+    methods.populateBatchDropDown = function (batches) {
         var html = '<option value="">Select A Batch</option>';
-        $.each(customers, function(key, val) {
-            html += '<option value="' + val.customerId + '">' +val.name + '</option>' + '</option>';
+        $.each(batches, function(key, val) {
+            html += '<option value="' + val.batchId + '">' +val.name + '</option>' + '</option>';
         });
-        $('select[name="batch"]').html(html);
+        $('select[name="batch"], select[name="toBatch"]').html(html);
     };
 
     methods.saveForm = function () {
@@ -202,6 +203,65 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                 $('#save-recipient-form')
                     .prop('disabled', false)
                     .html('Save');
+            },
+            error: function (response, status) {
+                console.log(response, status);
+            }
+        });
+    };
+
+    methods.moveRecipients = function () {
+        $.ajax({
+            url: '/recipient/move',
+            type: 'POST',
+            dataType: 'json',
+            data: {
+                who: function () {
+                    return $('select[name="who"]').val();
+                },
+                toBatchId: function () {
+                    return $('select[name="toBatch"]').val();
+                },
+                fromBatchId: function () {
+                    return $('select[name="batch"]').val();
+                },
+                recipientIds: function () {
+                    var ids = [];
+                    $('.move-recipient:checked').each(function (key, val) {
+                        ids.push($(this).val());
+                    });
+                    return ids;
+                }()
+            },
+            beforeSend: function () {
+                $('#move-recipeint-submit')
+                    .prop('disabled', true)
+                    .html('Moving...');
+            },
+            success: function(result) {
+                if(result.success) {
+                    $('#move-recipient-form').clearForm();
+                    $('#recipient-table input[type="checkbox"]').prop('checked', false);
+                    methods.getRecipients(
+                        $('select[name="batch"]').val(),
+                        null,
+                        null,
+                        sort,
+                        offset,
+                        limit
+                    );
+                    $('#move-recipient-dialog').modal('hide');
+                } else {
+                    base.displayFormErrors(
+                        $('#edit-recipient-form'),
+                        result.errors
+                    );
+                }
+            },
+            complete: function () {
+                $('#move-recipeint-submit')
+                    .prop('disabled', false)
+                    .html('Move');
             },
             error: function (response, status) {
                 console.log(response, status);
@@ -317,6 +377,34 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         });
     };
 
+    listeners.moveRecipients = function  () {
+        $('#move-recipient-form').validate({
+            rules: {
+                who: 'required',
+                toBatch: {
+                    required: true,
+                    digits: true
+                }
+            },
+            messages : {
+                who: 'Please select a type',
+                toBatch: 'Please select a batch'
+            },
+            showErrors: function () {},
+            invalidHandler: base.displayFormErrors,
+            submitHandler: methods.moveRecipients
+        });
+        $('#select-all-recipients').click(function () {
+            $('.move-recipient').prop('checked', $(this).is(':checked'));
+        });
+        $('#move-recipeint-submit').click(function () {
+            $('#move-recipient-form').submit();
+        });
+        $('#move-recipient-dialog').on('hidden.bs.modal', function () {
+            $('#move-recipient-form').clearForm();
+        });
+    };
+
     listeners.selectCustomer = function () {
         $('select[name="customer"]').change(function () {
             $('select[name="batch"]')
@@ -401,6 +489,7 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                 .each(function (key, val) {
                     $(val).clearForm();
                 });
+            $('#recipient-form button').hide();
             $('#upload-csv-link').attr('disabled', $(this).val() === '');
             if($(this).val() != '') {
                 methods.getRecipients(
@@ -463,10 +552,3 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         });
     };
 };
-
-
-
-
-
-
-

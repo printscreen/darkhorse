@@ -125,6 +125,38 @@ class Model_Recipients extends Model_Base_Db
 
         $result = $query->execute();
 
+        if(!$result) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function moveRecipients($fromBatchId, $toBatchId, $who, $recipientIds = array())
+    {
+        $where = 'WHERE r.ship_ts IS NULL AND r.batch_id = :fromBatchId';
+        $binds[':fromBatchId'] = array('value' => $fromBatchId, 'type' => PDO::PARAM_INT);
+        $binds[':toBatchId'] = array('value' => $toBatchId, 'type' => PDO::PARAM_INT);
+
+        if($who !== 'all' && empty($recipientIds)) {
+            throw new Zend_Exception('No recipient ids supplied');
+        } elseif($who !== 'all' && count($recipientIds) > 0) {
+            $ids = array();
+            foreach($recipientIds as $key => $id) {
+                $ids[] = ':id_'.$id;
+                $binds[':id_'.$id] = array('value' => $id, 'type' => PDO::PARAM_INT);
+            }
+            $where .= ' AND r.recipient_id IN ('. implode(',', $ids) .')';
+        }
+        $sql = "UPDATE recipient r
+                SET r.batch_id = :toBatchId
+                $where
+        ";
+
+        $query = $this->_db->prepare($sql);
+        $this->bind($query, $binds);
+
+        $result = $query->execute();
 
         if(!$result) {
             return false;
