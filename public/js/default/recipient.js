@@ -56,7 +56,16 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                 limit: l
             },
             success: function(data) {
+                var name = $('select[name="batch"] option:selected')
+                                .text()
+                                .split(' ')
+                                .join('');
                 methods.populateTable(data.recipients);
+                //Handle export links
+                $('#export-recipients').attr('href', '/recipient/export?batchId='+batchId+'&name='+name);
+                $('#stats').attr('href', '/recipient/stats?batchId='+batchId+'&name='+name);
+                //Clear checkboxes
+                $('input[type="checkbox"]').prop('checked', false);
             },
             error: function (response, status) {
                 console.log(response, status);
@@ -125,8 +134,9 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                         '</td>' +
                     '</tr>';
         });
+        $('#recipient-form .btn-group').show();
         if(html !== '') {
-            $('#recipient-table .table-tools, #recipient-form button').show();
+            $('#recipient-table .table-tools').show();
             $('#recipient-table .pagination').paginate({
                 total: total,
                 limit: limit,
@@ -489,8 +499,7 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                 .each(function (key, val) {
                     $(val).clearForm();
                 });
-            $('#recipient-form button').hide();
-            $('#upload-csv-link').attr('disabled', $(this).val() === '');
+            $('#recipient-form .btn-group').hide();
             if($(this).val() != '') {
                 methods.getRecipients(
                     $(this).val()

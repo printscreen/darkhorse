@@ -119,4 +119,36 @@ class RecipientController extends Darkhorse_Controller_Action
             'errors' => $form->getFormErrors()
         ));
     }
+
+    public function statsAction()
+    {
+        $stats = new Model_Stats();
+        $fileName = sprintf('stats-%s-%s.csv'
+          , date('Y-m-d')
+          , $this->getRequest()->getParam('name', 'no-name')
+        );
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender();
+        header("Content-type: text/csv");
+        header("Content-Disposition: attachment; filename={$fileName}");
+        $fh = fopen('php://output', 'w');
+        $stats->export($fh, $this->getRequest()->getParam('batchId'));
+        fclose($fh);
+    }
+
+    public function exportAction()
+    {
+        $recipients = new Model_Recipients();
+        $fileName = sprintf('export-%s-%s.csv'
+          , date('Y-m-d')
+          , $this->getRequest()->getParam('name', 'no-name')
+        );
+        $this->_helper->layout->disableLayout();
+        $this->_helper->viewRenderer->setNoRender();
+        header("Content-type: text/csv");
+        header("Content-Disposition: attachment; filename={$fileName}");
+        $fh = fopen('php://output', 'w');
+        $recipients->export($fh, $this->getRequest()->getParam('batchId'));
+        fclose($fh);
+    }
 }

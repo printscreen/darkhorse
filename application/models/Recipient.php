@@ -267,7 +267,7 @@ class Model_Recipient extends Model_Base_Db
 
     //Setters
     public function setRecipientId($recipientId){$this->_recipientId = $recipientId; return $this;}
-    public function setbatchId($batchId){$this->_batchId = $batchId; return $this;}
+    public function setBatchId($batchId){$this->_batchId = $batchId; return $this;}
     public function setEmail($email){$this->_email = $email; return $this;}
     public function setFirstName($firstName){$this->_firstName = $firstName; return $this;}
     public function setLastName($lastName){$this->_lastName = $lastName; return $this;}

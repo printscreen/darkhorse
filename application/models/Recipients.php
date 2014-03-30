@@ -175,4 +175,86 @@ class Model_Recipients extends Model_Base_Db
         }
         return $recipients;
     }
+
+    public function export($filePointer, $batchId)
+    {
+        $where = '';
+        $binds = array();
+        if(!empty($batchId) && is_numeric($batchId)) {
+            $where .= ' AND r.batch_id = :batchId';
+            $binds[':batchId'] = array('value' => $batchId, 'type' => PDO::PARAM_INT);
+        } else {
+            throw new Zend_Exception('No batch id supplied');
+        }
+
+        $sql = "SELECT
+                r.recipient_id
+              , r.batch_id
+              , r.email
+              , r.first_name
+              , r.last_name
+              , r.address_line_one
+              , r.address_line_two
+              , r.city
+              , r.state
+              , r.postal_code
+              , r.verified_address
+              , r.insert_ts
+              , r.ship_ts
+              , r.tracking_number
+              , r.shirt_sex
+              , r.shirt_size
+              , r.shirt_type
+              , r.quantity
+              , ( SELECT
+                    count(*)
+                  FROM recipient r
+                  WHERE true
+                  $where
+                ) AS total
+            FROM recipient r
+            WHERE true
+            $where
+            ORDER BY 1
+            LIMIT 0,".PHP_INT_MAX;
+
+        $query = $this->_db->prepare($sql);
+
+        $this->bind($query, $binds);
+        $query->execute();
+
+        fputcsv($filePointer, array(
+            'Email'
+          , 'First Name'
+          , 'Last Name'
+          , 'Address Line One'
+          , 'Address Line Two'
+          , 'City'
+          , 'State'
+          , 'Postal Code'
+          , 'Shirt Sex'
+          , 'Shirt Size'
+          , 'Shirt Type'
+          , 'Quantity'
+        ));
+
+        while($result = $query->fetch()) {
+            $recipient = new Model_Recipient();
+            $recipient->loadRecord($result);
+            fputcsv($filePointer, array(
+                $recipient->getEmail()
+              , $recipient->getFirstName()
+              , $recipient->getLastName()
+              , $recipient->getAddressLineOne()
+              , $recipient->getAddressLineTwo()
+              , $recipient->getCity()
+              , $recipient->getState()
+              , $recipient->getPostalCode()
+              , $recipient->getShirtSex()
+              , $recipient->getShirtSize()
+              , $recipient->getShirtType()
+              , $recipient->getQuantity()
+            ));
+        }
+    }
 }

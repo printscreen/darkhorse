@@ -48,6 +48,8 @@ VALUES
 ,   ('default:recipient:edit')
 ,   ('default:recipient:get-recipient')
 ,   ('default:recipient:move')
+,   ('default:recipient:stats')
+,   ('default:recipient:export')
 ;
 
 CREATE TABLE user_type_resource (
@@ -81,7 +83,9 @@ VALUES
     (16,1), -- default:recipient:view
     (17,1), -- default:recipient:edit
     (18,1), -- default:recipient:get
-    (19,1) -- default:recipient:move
+    (19,1), -- default:recipient:move
+    (20,1), -- default:recipient:stats
+    (21,1) -- default:recipients:export
 ;
 
 CREATE TABLE customer (
