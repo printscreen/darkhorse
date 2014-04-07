@@ -168,9 +168,9 @@ class Model_Recipient extends Model_Base_Db
                   , COALESCE(:verifiedAddress, false)
                   , :shipTs
                   , :trackingNumber
-                  , :shirtSex
-                  , :shirtSize
-                  , :shirtType
+                  , UPPER(:shirtSex)
+                  , UPPER(:shirtSize)
+                  , UPPER(:shirtType)
                   , :quantity
                 )";
 
@@ -226,9 +226,9 @@ class Model_Recipient extends Model_Base_Db
                   , verified_address = COALESCE(:verifiedAddress, verified_address)
                   , ship_ts = COALESCE(:shipTs, ship_ts)
                   , tracking_number = COALESCE(:trackingNumber, tracking_number)
-                  , shirt_sex = COALESCE(:shirtSex, shirt_sex)
-                  , shirt_size = COALESCE(:shirtSize, shirt_sex)
-                  , shirt_type = COALESCE(:shirtType, shirt_type)
+                  , shirt_sex = COALESCE(UPPER(:shirtSex), shirt_sex)
+                  , shirt_size = COALESCE(UPPER(:shirtSize), shirt_sex)
+                  , shirt_type = COALESCE(UPPER(:shirtType), shirt_type)
                   , quantity = COALESCE(:quantity, quantity)
                   WHERE recipient_id = :recipientId;
                 ";

@@ -29,7 +29,7 @@ class Model_Stats extends Model_Base_Db
                     shirt_sex
                   , shirt_size
                   , shirt_type
-                  , count(*)
+                  , count(*) AS quantity
                 FROM recipient
                 WHERE batch_id = :batchId
                 GROUP BY

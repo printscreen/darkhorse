@@ -1,5 +1,7 @@
 @CHARSET "UTF-8";
-
+a, a:focus {
+    outline: none !important;
+}
 body {
   padding-top: 60px;
 }
@@ -10,6 +12,13 @@ body.modal-open {
     overflow: auto;
 }
 #recipient-table .pagination {
-    display:inline;
+    display: inline;
     margin: 0;
+}
+.product-weight {
+    width: 195px;
+}
+#prepare-table form img {
+    width: 12px;
+    height: 12px;
 }

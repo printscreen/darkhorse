@@ -1,7 +1,7 @@
 <?php $url = sprintf('/%s/%s/%s',
-        Zend_Controller_Front::getInstance()->getRequest()->getModuleName(),
-        Zend_Controller_Front::getInstance()->getRequest()->getControllerName(),
-        Zend_Controller_Front::getInstance()->getRequest()->getActionName()
+        $module = Zend_Controller_Front::getInstance()->getRequest()->getModuleName(),
+        $controller = Zend_Controller_Front::getInstance()->getRequest()->getControllerName(),
+        $action = Zend_Controller_Front::getInstance()->getRequest()->getActionName()
       ); ?>
 <div class="navbar navbar-inverse navbar-fixed-top">
     <div class="container">
@@ -20,7 +20,14 @@
                 <li <?= $url=='/default/customer/index'?'class="active"':''; ?>><a href="/customer">Customers</a></li>
                 <li <?= $url=='/default/batch/index'?'class="active"':''; ?>><a href="/batch">Batches</a></li>
                 <li <?= $url=='/default/recipient/index'?'class="active"':''; ?>><a href="/recipient">Recipients</a></li>
-            <?php } elseif(Zend_Registry::get(SESSION)->userTypeId == USER_TYPE_EMPLOYEE) { ?>
+                <li class="dropdown <?= $controller == 'postage' ? 'active' : '' ?>">
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown">Postage <b class="caret"></b></a>
+                    <ul class="dropdown-menu">
+                        <li><a href="/postage/prepare">Prepare</a></li>
+                        <li><a href="/postage/print">Print</a></li>
+                    </ul>
+                </li>
+             <?php } elseif(Zend_Registry::get(SESSION)->userTypeId == USER_TYPE_EMPLOYEE) { ?>
 
             <?php } ?>
                 <li><a href="/auth/logout">Logout</a></li>

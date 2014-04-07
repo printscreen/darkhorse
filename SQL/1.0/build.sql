@@ -50,6 +50,10 @@ VALUES
 ,   ('default:recipient:move')
 ,   ('default:recipient:stats')
 ,   ('default:recipient:export')
+,   ('default:postage:prepare')
+,   ('default:postage:product')
+,   ('default:postage:set-product-type')
+,   ('default:postage:set-product-weight')
 ;
 
 CREATE TABLE user_type_resource (
@@ -85,7 +89,11 @@ VALUES
     (18,1), -- default:recipient:get
     (19,1), -- default:recipient:move
     (20,1), -- default:recipient:stats
-    (21,1) -- default:recipients:export
+    (21,1), -- default:recipients:export
+    (22,1), -- default:postage:prepare
+    (23,1), -- default:postage:product
+    (24,1), -- default:postage:set-product-type
+    (25,1) -- default:postage:set-product-weight
 ;
 
 CREATE TABLE customer (
@@ -132,9 +140,11 @@ CREATE TABLE recipient (
     shirt_sex           VARCHAR(255)    NOT NULL,
     shirt_size          VARCHAR(255)    NOT NULL,
     shirt_type          VARCHAR(255)    NOT NULL,
+    weight              INT(10)         NOT NULL,
     quantity            INT(10)         NOT NULL,
     PRIMARY KEY (recipient_id),
     FOREIGN KEY (batch_id) REFERENCES batch(batch_id)
 );
+
 
 COMMIT;

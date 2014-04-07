@@ -121,7 +121,19 @@ class Model_Recipients extends Model_Base_Db
               , shirt_size
               , shirt_type
               , quantity
-            )");
+            )
+            SET
+              email = TRIM(email),
+              first_name = TRIM(first_name),
+              last_name = TRIM(last_name),
+              address_line_one = TRIM(address_line_one),
+              address_line_two = TRIM(address_line_two),
+              city = TRIM(city),
+              state = TRIM(state),
+              postal_code = TRIM(postal_code),
+              shirt_sex = UPPER(TRIM(shirt_sex)),
+              shirt_size = UPPER(TRIM(shirt_size)),
+              shirt_type = UPPER(TRIM(shirt_type))");
 
         $result = $query->execute();
 

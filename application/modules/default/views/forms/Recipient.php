@@ -86,7 +86,7 @@ class Form_Recipient extends Darkhorse_Form
         $this->addElement($shirtSex);
 
         $shirtSize = new Zend_Form_Element_Text('shirtSize');
-        $postalCode->setRequired(false)
+        $shirtSize->setRequired(false)
                    ->addFilter('StripTags')
                    ->addFilter('StringTrim')
                    ->addValidator('NotEmpty', true);
