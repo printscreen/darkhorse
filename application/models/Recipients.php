@@ -90,6 +90,13 @@ class Model_Recipients extends Model_Base_Db
         if(empty($batchId) || !is_numeric($batchId)) {
             throw new Zend_Exception('You must provide a batch id');
         }
+
+        // Remove mac line endings
+        $lines = file_get_contents($filePath);
+        $lines = str_replace("\r\n", "\n", $lines);
+        $lines = str_replace("\r", "\n", $lines);
+        file_put_contents($filePath, $lines);
+
         // Need to tack on batch id to the CSV before import
         $fh = fopen($filePath, 'r');
         $insertFile = tmpfile();
