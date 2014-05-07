@@ -50,6 +50,8 @@ VALUES
 ,   ('default:recipient:move')
 ,   ('default:recipient:stats')
 ,   ('default:recipient:export')
+,   ('default:recipient:verify')
+,   ('default:recipient:verify-status')
 ,   ('default:postage:prepare')
 ,   ('default:postage:product')
 ,   ('default:postage:set-product-type')
@@ -90,10 +92,12 @@ VALUES
     (19,1), -- default:recipient:move
     (20,1), -- default:recipient:stats
     (21,1), -- default:recipients:export
-    (22,1), -- default:postage:prepare
-    (23,1), -- default:postage:product
-    (24,1), -- default:postage:set-product-type
-    (25,1) -- default:postage:set-product-weight
+    (22,1), -- default:recipients:verify
+    (23,1), -- default:recipients:verify-status
+    (24,1), -- default:postage:prepare
+    (25,1), -- default:postage:product
+    (26,1), -- default:postage:set-product-type
+    (27,1) -- default:postage:set-product-weight
 ;
 
 CREATE TABLE customer (

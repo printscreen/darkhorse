@@ -7,12 +7,15 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         defined('TOKEN') || define('TOKEN', 'User_Token');
         defined('SALT') || define('SALT', 'With_my_last_breath_i_curse_Zoidberg!');
         defined('SESSION') || define('SESSION', 'Darkhorse_Session');
+        defined('CACHE') || define('CACHE', 'Darkhorse_Cache');
         defined('SYSTEM_NAME') || define('SYSTEM_NAME', 'System_Name');
         defined('SYSTEM_EMAIL_ADDRESS') || define('SYSTEM_EMAIL_ADDRESS', 'System_Email_Address');
         defined('SYSTEM_MAILER') || define('SYSTEM_MAILER', 'System_Emailer_Object');
                 defined('APPLICATION_URL') || define('APPLICATION_URL', 'Application_Url');
         defined('USER_TYPE_ADMIN') || define('USER_TYPE_ADMIN', 1);
         defined('USER_TYPE_EMPLOYEE') || define('USER_TYPE_EMPLOYEE', 2);
+        defined('USPS_API_USERNAME') || define('USPS_API_USERNAME', 'Usps_Api_Username');
+        defined('USPS_API_PASSWORD') || define('USPS_API_PASSWORD', 'Usps_Api_Password');
     }
 
     protected function _initAutoload()
@@ -40,6 +43,13 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         date_default_timezone_set($this->getOption('default_time_zone'));
         Zend_Registry::set(SYSTEM_NAME, $this->getOption('application_name'));
         Zend_Registry::set(APPLICATION_URL, $this->getOption('application_url'));
+    }
+
+    protected function _initUSPS()
+    {
+        $usps = $this->getOption('usps');
+        Zend_Registry::set(USPS_API_USERNAME, $usps['username']);
+        Zend_Registry::set(USPS_API_PASSWORD, $usps['password']);
     }
 
     protected function _initDb()
@@ -75,5 +85,29 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
             )
         );
         Zend_Registry::set(SYSTEM_MAILER,$mailer);
+    }
+
+    protected function _initCcache()
+    {
+        $cache = Zend_Cache::factory(
+                  'Core'
+                , 'File'
+                , array(
+                      'caching' => true
+                    , 'cache_id_prefix' => 'Darkhorse_'
+                    , 'lifetime' => 7200
+                    , 'logging' => true
+                    , 'write_control' => true
+                    , 'automatic_serialization' => true
+                    , 'automatic_cleaning_factor' => 0
+                    , 'ignore_user_abort' => false
+                 )
+                 , array(
+                      'compression' => false
+                    , 'compatibility' => false
+                    , 'cacheDir' => '/tmp'
+                )
+             );
+        Zend_Registry::set(CACHE,$cache);
     }
 }

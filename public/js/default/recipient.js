@@ -8,7 +8,8 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         limit = 10,
         searchField = null,
         searchText = null,
-        uploader = null;
+        uploader = null,
+        forceProgressTrackingStop = true;
 
     methods.getCustomers = function () {
         $.ajax({
@@ -279,6 +280,77 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         });
     };
 
+    methods.trackStatus = function () {
+        $.ajax({
+            url: '/recipient/verify-status',
+            dataType: 'json',
+            data: function () {
+                return $('#recipient-form select[name="batch"]').val();
+            },
+            success: function (response) {
+                // Forcing stop, exit immediately
+                if (forceProgressTrackingStop) {
+                    return;
+                }
+                // Update UI with progress
+                var status = response.status.split('|'),
+                    width = (+status[0] * 100) / +status[1],
+                    text = null;
+                if(response.status) {
+                    $('#verify-recipient-dialog')
+                    .find('.progress-bar')
+                        .css('width', width + '%').end()
+                    .find('.progress-text')
+                        .text( +status[0] + ' / ' + (+status[1]));
+                }
+                //methods.trackStatus();
+
+                window.setTimeout(
+                    methods.trackStatus, 500
+                );
+            }
+        });
+    };
+
+    methods.verify = function () {
+        $.ajax({
+            url: '/recipient/verify',
+            dataType: 'json',
+            data: function () {
+                return $('#recipient-form select[name="batch"]').val();
+            },
+            beforeSend: function () {
+                forceProgressTrackingStop = false;
+                $('#verify-recipeint-submit')
+                    .prop('disabled', true)
+                    .text('Verifying...');
+            },
+            success: function (response) {
+                methods.getRecipients(
+                    $('select[name="batch"]').val(),
+                    null,
+                    null,
+                    sort,
+                    offset,
+                    limit
+                );
+                $('#verify-recipient-dialog').modal('hide');
+            },
+            complete: function () {
+                $('#verify-recipeint-submit')
+                    .prop('disabled', false)
+                    .text('Verify');
+                forceProgressTrackingStop = true;
+                $('#verify-recipient-dialog')
+                    .find('.progress-bar')
+                        .css('width', '0%').end()
+                    .find('.progress-text')
+                        .text('');
+            }
+        });
+        methods.trackStatus();
+    };
+
     listeners.uploadFile = function() {
         uploader = new AjaxUpload($('#upload-file'), {
             action: '/recipient/upload',
@@ -462,6 +534,20 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         $('#upload-csv-dialog').on('hide.bs.modal', function (event) {
             uploader._clearInput();
             $('#upload-file').next().html('');
+        });
+    };
+
+    listeners.verifyDialog = function () {
+        $('#verify-recipeint-submit').click(function (event) {
+            methods.verify();
+        });
+        $('#verify-recipient-dialog').on('hide.bs.modal', function (event) {
+            $('#verify-recipient-dialog')
+                .find('.progress-bar')
+                    .css('width', '0%').end()
+                .find('.progress-text')
+                    .text('');
+                forceProgressTrackingStop = true;
         });
     };
 

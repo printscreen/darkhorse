@@ -151,4 +151,45 @@ class RecipientController extends Darkhorse_Controller_Action
         $recipients->export($fh, $this->getRequest()->getParam('batchId'));
         fclose($fh);
     }
+
+    public function verifyAction()
+    {
+        $cache = Zend_Registry::get(CACHE);
+        $batchKey = $this->getRequest()->getParam('batchId') . '_batch_verify';
+        /**
+        if($session->$batchKey) {
+            $this->_helper->json(array(
+                'success' => false,
+                'message' => 'Verification in process for this batch'
+            ));
+        }
+        */
+        $cache->save('0|0', $batchKey);
+        try {
+            session_write_close();
+            set_time_limit(0);
+            $recipients = new Model_Recipients();
+            $recipients->verifyRecipients(
+                $this->getRequest()->getParam('batchId')
+              , $batchKey
+            );
+        } catch (Exception $e) {
+            $this->_helper->json(array(
+                'success' => false,
+                'message' => $e->getMessage()
+            ));
+        }
+        $this->_helper->json(array(
+            'success' => true
+        ));
+    }
+
+    public function verifyStatusAction()
+    {
+        $cache = Zend_Registry::get(CACHE);
+        $batchKey = $this->getRequest()->getParam('batchId') . '_batch_verify';
+        $this->_helper->json(array(
+            'status' => $cache->load($batchKey)
+        ));
+    }
 }

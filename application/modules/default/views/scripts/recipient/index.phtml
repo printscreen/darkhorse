@@ -23,6 +23,7 @@
                                     <li><a href="#" id="export-recipients">Download All</a></li>
                                     <li><a href="#" id="stats">Download Stats</a></li>
                                     <li class="divider"></li>
+                                    <li><a href="#" data-toggle="modal" data-target="#verify-recipient-dialog">Verify Recipients</a></li>
                                     <li><a href="#" data-toggle="modal" data-target="#move-recipient-dialog">Move Recipients</a></li>
                                     <li><a href="#" id="upload-csv-link">Upload Recipients</a></li>
                                 </ul>
@@ -243,6 +244,28 @@
             <div class="modal-footer">
                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="save-recipient-form">Save</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="verify-recipient-dialog">
+    <div class="modal-dialog modal-sm">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">Verify Recipients</h4>
+            </div>
+            <div class="modal-body">
+                <div class="progress progress-striped active">
+                    <div class="progress-bar"  role="progressbar" aria-valuenow="0" aria-valuemin="0" aria-valuemax="0" style="width: 0%">
+                        <span class="sr-only">Working</span>
+                    </div>
+                </div>
+                <div class="progress-text"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="verify-recipeint-submit">Verify</button>
             </div>
         </div>
     </div>

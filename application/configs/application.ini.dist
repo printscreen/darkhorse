@@ -31,6 +31,9 @@ mail.server = ""
 mail.user_name = ""
 mail.password = ""
 
+usps.username = ""
+usps.password = ""
+
 ;Modular suport
 resources.frontController.moduleDirectory = APPLICATION_PATH "/modules"
 resources.modules[] =

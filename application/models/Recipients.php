@@ -85,6 +85,63 @@ class Model_Recipients extends Model_Base_Db
         return $this->_recipients;
     }
 
+    public function verifyRecipients($batchId, $status)
+    {
+        $where = '';
+        $binds = array();
+        if(!empty($batchId) && is_numeric($batchId)) {
+            $where .= ' AND r.batch_id = :batchId';
+            $binds[':batchId'] = array('value' => $batchId, 'type' => PDO::PARAM_INT);
+        }
+
+        $sql = "SELECT
+                r.recipient_id
+              , r.batch_id
+              , r.email
+              , r.first_name
+              , r.last_name
+              , r.address_line_one
+              , r.address_line_two
+              , r.city
+              , r.state
+              , r.postal_code
+              , r.verified_address
+              , r.insert_ts
+              , r.ship_ts
+              , r.tracking_number
+              , r.shirt_sex
+              , r.shirt_size
+              , r.shirt_type
+              , r.quantity
+              , ( SELECT
+                    count(*)
+                  FROM recipient r
+                  WHERE true
+                  $where
+                ) AS total
+            FROM recipient r
+            WHERE NOT verified_address
+            $where
+        ";
+
+        $query = $this->_db->prepare($sql);
+        $this->bind($query, $binds);
+        $query->execute();
+
+        $count = 0;
+        $cache = Zend_Registry::get(CACHE);
+        while($result = $query->fetch()) {
+            $count++;
+            $recipient = new Model_Recipient();
+            $recipient->loadRecord($result);
+            $total = $recipient->getTotal();
+            $recipient->verify();
+            if($status) {
+                $cache->save("$count|$total", $status);
+            }
+        }
+    }
+
     public function massInsertFromCsv($filePath, $batchId)
     {
         if(empty($batchId) || !is_numeric($batchId)) {

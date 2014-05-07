@@ -265,6 +265,41 @@ class Model_Recipient extends Model_Base_Db
         return true;
     }
 
+    public function verify()
+    {
+        $verify = new Darkhorse_Usps_Stamps(array(
+            'apiUsername' => Zend_Registry::get(USPS_API_USERNAME),
+            'apiPassword' => Zend_Registry::get(USPS_API_PASSWORD)
+        ));
+        try {
+            $response = $verify->verifyAddress(array(
+                'firstName' => $this->_firstName,
+                'lastName' => $this->_lastName,
+                'address' => $this->_addressLineOne,
+                'addressLineTwo' => $this->_addressLineTwo,
+                'city' => $this->_city,
+                'state' => $this->_state,
+                'postalCode' => $this->_postalCode
+            ));
+        } catch(Zend_Exception $ze) {
+            //Unable to verify
+            return false;
+        }
+
+        $address = current($response['AddressValidateResponse']);
+        $this->_addressLineOne = $address['Address2']; // Yes its backwards, look at the USPS api for why
+        $this->_addressLineTwo = isset($address['Address1']) ? $address['Address1'] : null;
+        $this->_city = $address['City'];
+        $this->_state = $address['State'];
+        $postal4 = isset($address['Zip4']) ? '-'.$address['Zip4'] : null;
+        $this->_postalCode = $address['Zip5'] . $postal4;
+        $this->_verifiedAddress = true;
+
+        $this->update();
+
+        return true;
+    }
+
     //Setters
     public function setRecipientId($recipientId){$this->_recipientId = $recipientId; return $this;}
     public function setBatchId($batchId){$this->_batchId = $batchId; return $this;}
