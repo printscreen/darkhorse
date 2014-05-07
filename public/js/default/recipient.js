@@ -639,6 +639,37 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         }, 500);
     };
 
+    listeners.sortable = function () {
+        $('.sortable').click(function () {
+            var direction = '',
+                upIcon = $(this).find('.glyphicon-arrow-up'),
+                downIcon = $(this).find('.glyphicon-arrow-down'),
+                firstTime = !$(this).find('span:not(.hide)').length,
+                currentlyUp = !upIcon.hasClass('hide');
+
+            if($('select[name="batch"]').val() == '') {
+                return;
+            }
+            $('.sortable').find('.glyphicon:not(.hide)').addClass('hide');
+            if(firstTime || currentlyUp) {
+                downIcon.removeClass('hide');
+                direction = '';
+            } else {
+                upIcon.removeClass('hide');
+                direction = '-';
+            }
+            sort = direction + $(this).data('sort-id');
+            methods.getRecipients(
+                $('select[name="batch"]').val(),
+                null,
+                null,
+                sort,
+                offset,
+                limit
+            );
+        });
+    };
+
     this.dispatch = function () {
         methods.getCustomers();
         // Add listeners

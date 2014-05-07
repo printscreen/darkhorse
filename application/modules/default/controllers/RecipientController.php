@@ -156,14 +156,6 @@ class RecipientController extends Darkhorse_Controller_Action
     {
         $cache = Zend_Registry::get(CACHE);
         $batchKey = $this->getRequest()->getParam('batchId') . '_batch_verify';
-        /**
-        if($session->$batchKey) {
-            $this->_helper->json(array(
-                'success' => false,
-                'message' => 'Verification in process for this batch'
-            ));
-        }
-        */
         $cache->save('0|0', $batchKey);
         try {
             session_write_close();
@@ -173,7 +165,9 @@ class RecipientController extends Darkhorse_Controller_Action
                 $this->getRequest()->getParam('batchId')
               , $batchKey
             );
+            $cache->remove($batchKey);
         } catch (Exception $e) {
+            $cache->remove($batchKey);
             $this->_helper->json(array(
                 'success' => false,
                 'message' => $e->getMessage()

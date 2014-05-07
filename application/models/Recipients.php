@@ -59,7 +59,7 @@ class Model_Recipients extends Model_Base_Db
             FROM recipient r
             WHERE true
             $where
-            ORDER BY :sort
+            ORDER BY :sort " . $this->getDirection($sort) . "
             LIMIT :offset,:limit
         ";
 
