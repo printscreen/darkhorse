@@ -63,9 +63,11 @@ Darkhorse.prototype.modules.prepare = function (base, index) {
                         '<td><a href="#" data-toggle="popover">' + val.shirtType + '</a></td>' +
                         '<td class="product-weight">' +
                             '<form class="form-inline">' +
-                                '<div class="input-group">' +
+                                '<div class="input-group pull-left">' +
                                     '<input type="text" size="1" readonly="readonly" class="form-control" value="' + (val.weight || 0) + '">' +
                                     '<span class="input-group-addon">oz</span>' +
+                                '</div>' +
+                                '<div class="pull-right">' +
                                     '<button class="btn btn-primary adjust-weight add-weight">' +
                                         '<span class="glyphicon glyphicon-white glyphicon-plus"></span>' +
                                     '</button>' +
@@ -211,8 +213,9 @@ Darkhorse.prototype.modules.prepare = function (base, index) {
     listeners.adjustWeight = function () {
         $('#prepare-table tbody').on('click', 'button.adjust-weight', function (event) {
             event.preventDefault();
-            var input = $(this).siblings('input'),
-                row = $(this).closest('tr'),
+
+            var row = $(this).closest('tr'),
+                input = row.find('input'),
                 currentValue = parseInt(input.val(), 10);
             if($(this).hasClass('add-weight')) {
                 currentValue = currentValue + 1;

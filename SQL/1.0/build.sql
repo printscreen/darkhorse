@@ -56,6 +56,8 @@ VALUES
 ,   ('default:postage:product')
 ,   ('default:postage:set-product-type')
 ,   ('default:postage:set-product-weight')
+,   ('default:postage:view')
+,   ('default:postage:print')
 ;
 
 CREATE TABLE user_type_resource (
@@ -97,7 +99,9 @@ VALUES
     (24,1), -- default:postage:prepare
     (25,1), -- default:postage:product
     (26,1), -- default:postage:set-product-type
-    (27,1) -- default:postage:set-product-weight
+    (27,1), -- default:postage:set-product-weight
+    (28,1), -- default:postage:view
+    (29,1) -- default:postage:print
 ;
 
 CREATE TABLE customer (

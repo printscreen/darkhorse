@@ -22,3 +22,6 @@ body.modal-open {
     width: 12px;
     height: 12px;
 }
+#prepare-table .form-inline .pull-left {
+    width: 90px;
+}

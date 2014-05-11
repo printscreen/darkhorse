@@ -2,6 +2,11 @@
 
 class PostageController extends Darkhorse_Controller_Action
 {
+    public function viewAction()
+    {
+
+    }
+
     public function prepareAction()
     {
         $this->view->headScript()
