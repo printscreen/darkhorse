@@ -11,7 +11,7 @@ body {
 body.modal-open {
     overflow: auto;
 }
-#recipient-table .pagination {
+table .pagination {
     display: inline;
     margin: 0;
 }

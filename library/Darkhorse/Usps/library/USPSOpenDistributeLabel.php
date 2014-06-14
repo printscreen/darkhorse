@@ -25,7 +25,7 @@ class USPSOpenDistributeLabel extends USPSBase {
 
   	// Sort them
   	// Hack by the only way this will work properly
-  	// since usps wants the tags to be in 
+  	// since usps wants the tags to be in
   	// a certain order
   	ksort($this->fields, SORT_NUMERIC);
 
@@ -151,10 +151,10 @@ class USPSOpenDistributeLabel extends USPSBase {
   	return $this;
   }
 
-  /** 
+  /**
    * Set any other requried string make sure you set the correct position as well
    * as the position of the items matters
-   * @param int $position 
+   * @param int $position
    * @param string $key
    * @param string $value
    * @return object

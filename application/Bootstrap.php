@@ -16,6 +16,10 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
         defined('USER_TYPE_EMPLOYEE') || define('USER_TYPE_EMPLOYEE', 2);
         defined('USPS_API_USERNAME') || define('USPS_API_USERNAME', 'Usps_Api_Username');
         defined('USPS_API_PASSWORD') || define('USPS_API_PASSWORD', 'Usps_Api_Password');
+        defined('STAMPS_FILE_PATH') || define('STAMPS_FILE_PATH', 'Stamps_File_Path');
+        defined('ENDICIA_REQUESTER_ID') || define('ENDICIA_REQUESTER_ID', 'Endicia_Requester_Id');
+        defined('ENDICIA_ACCOUNT_ID') || define('ENDICIA_ACCOUNT_ID', 'Endicia_Account_Id');
+        defined('ENDICIA_PASSPHRASE') || define('ENDICIA_PASSPHRASE', 'Endicia_Passphrase');
     }
 
     protected function _initAutoload()
@@ -48,8 +52,18 @@ class Bootstrap extends Zend_Application_Bootstrap_Bootstrap
     protected function _initUSPS()
     {
         $usps = $this->getOption('usps');
+        $filePath = $this->getOption('stamps_file_path');
         Zend_Registry::set(USPS_API_USERNAME, $usps['username']);
         Zend_Registry::set(USPS_API_PASSWORD, $usps['password']);
+        Zend_Registry::set(STAMPS_FILE_PATH, $filePath);
+    }
+
+    protected function _initEndicia()
+    {
+        $endicia = $this->getOption('endicia');
+        Zend_Registry::set(ENDICIA_REQUESTER_ID, $endicia['requesterId']);
+        Zend_Registry::set(ENDICIA_ACCOUNT_ID, $endicia['accountId']);
+        Zend_Registry::set(ENDICIA_PASSPHRASE, $endicia['passPhrase']);
     }
 
     protected function _initDb()

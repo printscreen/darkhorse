@@ -23,6 +23,12 @@ resources.db.params.username = ""
 resources.db.params.password = ""
 resources.db.params.driver_options.1001 = true;
 
+endicia.requesterId = ""
+endicia.accountId = ""
+endicia.passPhrase = ""
+
+stamps_file_path = ""
+
 session.lifetime = 7200
 session.idletimeout = 600
 
@@ -56,4 +62,10 @@ resources.db.adapter = "pdo_mysql"
 resources.db.params.port =
 resources.db.params.username = ""
 resources.db.params.password = ""
+
+stamps_file_path = ""
+
+endicia.requesterId = ""
+endicia.accountId = ""
+endicia.passPhrase = ""
 

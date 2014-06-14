@@ -33,16 +33,17 @@ class Darkhorse_Usps_Stamps
           , $fromAddress['city']
           , $fromAddress['state']
           , $fromAddress['postalCode']
-          , $fromAddress['address_line_two']
+          , isset($fromAddress['address_line_two']) ? $fromAddress['address_line_two'] : null
         );
 
-        $label->setFromAddress(
-            $fromAddress['name']
-          , $fromAddress['address']
-          , $fromAddress['city']
-          , $fromAddress['state']
-          , $fromAddress['postalCode']
-          , $fromAddress['addressLineTwo']
+        $label->setToAddress(
+            $toAddress['name']
+          , $toAddress['address']
+          , $toAddress['city']
+          , $toAddress['state']
+          , $toAddress['postalCode']
+          , null
+          , $toAddress['addressLineTwo']
         );
 
         $label->setWeightOunces($weight);
@@ -50,7 +51,7 @@ class Darkhorse_Usps_Stamps
         $label->createLabel();
 
         if(!$label->isSuccess()) {
-            throw new Zend_Exception('Unable to generate postage');
+            throw new Zend_Exception($label->getErrorMessage());
         }
 
         return $label->getArrayResponse();

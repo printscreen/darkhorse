@@ -293,18 +293,18 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
                     return;
                 }
                 // Update UI with progress
-                var status = response.status.split('|'),
-                    width = (+status[0] * 100) / +status[1],
-                    text = null;
                 if(response.status) {
-                    $('#verify-recipient-dialog')
-                    .find('.progress-bar')
-                        .css('width', width + '%').end()
-                    .find('.progress-text')
-                        .text( +status[0] + ' / ' + (+status[1]));
+                    var status = response.status.split('|'),
+                        width = (+status[0] * 100) / +status[1],
+                        text = null;
+                    if(response.status) {
+                        $('#verify-recipient-dialog')
+                            .find('.progress-bar')
+                                .css('width', width + '%').end()
+                            .find('.progress-text')
+                                .text( +status[0] + ' / ' + (+status[1]));
+                    }
                 }
-                //methods.trackStatus();
-
                 window.setTimeout(
                     methods.trackStatus, 500
                 );

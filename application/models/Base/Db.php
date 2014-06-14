@@ -52,7 +52,8 @@ class Model_Base_Db extends Model_Base_Base
         } elseif(is_null($value)) {
             return null;
         } else {
-            return strtolower(trim($value)) == 'true' ? 1:0;
+            $value = strtolower(trim($value));
+            return ($value == 'true' || $value == '1') ? 1:0;
         }
     }
 

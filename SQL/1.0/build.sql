@@ -58,6 +58,9 @@ VALUES
 ,   ('default:postage:set-product-weight')
 ,   ('default:postage:view')
 ,   ('default:postage:print')
+,   ('default:postage:get-recipient')
+,   ('default:postage:generate-stamp')
+,   ('default:postage:cancel-stamp')
 ;
 
 CREATE TABLE user_type_resource (
@@ -101,7 +104,10 @@ VALUES
     (26,1), -- default:postage:set-product-type
     (27,1), -- default:postage:set-product-weight
     (28,1), -- default:postage:view
-    (29,1) -- default:postage:print
+    (29,1), -- default:postage:print
+    (30,1), -- default:postage:get-recipient
+    (31,1), -- default:postage:generate-stamp
+    (32,1) -- default:postage:cancel-stamp
 ;
 
 CREATE TABLE customer (
@@ -130,6 +136,12 @@ CREATE TABLE batch (
     CONSTRAINT uc_customer_name UNIQUE (name, customer_id)
 );
 
+CREATE TABLE scan_form (
+    scan_form_id        INT(10)         NOT NULL auto_increment,
+    insert_ts           TIMESTAMP       NOT NULL,
+    PRIMARY KEY(scan_form_id)
+);
+
 CREATE TABLE recipient (
     recipient_id        INT(10)         NOT NULL auto_increment,
     batch_id            INT(10)         NOT NULL,
@@ -145,14 +157,18 @@ CREATE TABLE recipient (
     insert_ts           TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
     ship_ts             TIMESTAMP       NULL,
     tracking_number     VARCHAR(255)    NULL,
+    scan_form_id        INT(10)         NULL,
     shirt_sex           VARCHAR(255)    NOT NULL,
     shirt_size          VARCHAR(255)    NOT NULL,
     shirt_type          VARCHAR(255)    NOT NULL,
     weight              INT(10)         NOT NULL,
     quantity            INT(10)         NOT NULL,
     PRIMARY KEY (recipient_id),
-    FOREIGN KEY (batch_id) REFERENCES batch(batch_id)
+    FOREIGN KEY (batch_id) REFERENCES batch(batch_id),
+    FOREIGN KEY (scan_form_id) REFERENCES scan_form(scan_form_id)
 );
+
+
 
 
 COMMIT;

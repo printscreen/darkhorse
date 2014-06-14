@@ -17,7 +17,7 @@ Darkhorse.prototype.modules.prepare = function (base, index) {
                 console.log(response, status);
             }
         });
-    }
+    };
 
     methods.getBatches = function (customerId, active) {
         $.ajax({
@@ -35,7 +35,7 @@ Darkhorse.prototype.modules.prepare = function (base, index) {
                 console.log(response, status);
             }
         });
-    }
+    };
 
     methods.getProducts = function (batchId) {
         $.ajax({

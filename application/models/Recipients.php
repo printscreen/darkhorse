@@ -46,6 +46,7 @@ class Model_Recipients extends Model_Base_Db
               , r.insert_ts
               , r.ship_ts
               , r.tracking_number
+              , r.scan_form_id
               , r.shirt_sex
               , r.shirt_size
               , r.shirt_type
@@ -85,6 +86,124 @@ class Model_Recipients extends Model_Base_Db
         return $this->_recipients;
     }
 
+    public function getRecipientsToPrint($batchId, $printType)
+    {
+        $where = '';
+        $binds = array();
+        if(!empty($batchId) && is_numeric($batchId)) {
+            $where .= ' AND r.batch_id = :batchId';
+            $binds[':batchId'] = array('value' => $batchId, 'type' => PDO::PARAM_INT);
+        } else {
+            throw new Zend_Exception('No batch id supplied');
+        }
+
+        if($printType == 'unshipped') {
+            $where .= ' AND r.ship_ts IS NULL AND verified_address';
+        } else if($printType == 'unverified') {
+            $where .= ' AND r.ship_ts IS NULL AND NOT verified_address';
+        }
+
+        $sql = "SELECT
+                r.recipient_id
+              , r.batch_id
+              , r.email
+              , r.first_name
+              , r.last_name
+              , r.address_line_one
+              , r.address_line_two
+              , r.city
+              , r.state
+              , r.postal_code
+              , r.verified_address
+              , r.insert_ts
+              , r.ship_ts
+              , r.tracking_number
+              , r.scan_form_id
+              , r.shirt_sex
+              , r.shirt_size
+              , r.shirt_type
+              , r.quantity
+              , ( SELECT
+                    count(*)
+                  FROM recipient r
+                  WHERE true
+                  $where
+                ) AS total
+            FROM recipient r
+            WHERE true
+            $where";
+
+        $query = $this->_db->prepare($sql);
+        $this->bind($query, $binds);
+        $query->execute();
+
+        $this->_recipients = array();
+
+        while($result = $query->fetch()) {
+            $recipient = new Model_Recipient();
+            $recipient->loadRecord($result);
+            $this->_recipients[] = $recipient;
+        }
+
+        return $this->_recipients;
+    }
+
+    public function getRecipientsToCancelPostage($batchId)
+    {
+        $where = ' AND r.scan_form_id IS NULL AND ship_ts IS NOT NULL and tracking_number IS NOT NULL';
+        $binds = array();
+        if(!empty($batchId) && is_numeric($batchId)) {
+            $where .= ' AND r.batch_id = :batchId';
+            $binds[':batchId'] = array('value' => $batchId, 'type' => PDO::PARAM_INT);
+        } else {
+            throw new Zend_Exception('No batch id supplied');
+        }
+
+        $sql = "SELECT
+                r.recipient_id
+              , r.batch_id
+              , r.email
+              , r.first_name
+              , r.last_name
+              , r.address_line_one
+              , r.address_line_two
+              , r.city
+              , r.state
+              , r.postal_code
+              , r.verified_address
+              , r.insert_ts
+              , r.ship_ts
+              , r.tracking_number
+              , r.scan_form_id
+              , r.shirt_sex
+              , r.shirt_size
+              , r.shirt_type
+              , r.quantity
+              , ( SELECT
+                    count(*)
+                  FROM recipient r
+                  WHERE true
+                  $where
+                ) AS total
+            FROM recipient r
+            WHERE true
+            $where";
+
+        $query = $this->_db->prepare($sql);
+        $this->bind($query, $binds);
+        $query->execute();
+
+        $this->_recipients = array();
+
+        while($result = $query->fetch()) {
+            $recipient = new Model_Recipient();
+            $recipient->loadRecord($result);
+            $this->_recipients[] = $recipient;
+        }
+
+        return $this->_recipients;
+    }
+
     public function verifyRecipients($batchId, $status)
     {
         $where = '';
@@ -109,6 +228,7 @@ class Model_Recipients extends Model_Base_Db
               , r.insert_ts
               , r.ship_ts
               , r.tracking_number
+              , r.scan_form_id
               , r.shirt_sex
               , r.shirt_size
               , r.shirt_type
@@ -278,6 +398,7 @@ class Model_Recipients extends Model_Base_Db
               , r.insert_ts
               , r.ship_ts
               , r.tracking_number
+              , r.scan_form_id
               , r.shirt_sex
               , r.shirt_size
               , r.shirt_type

@@ -15,6 +15,7 @@ class Model_Recipient extends Model_Base_Db
     protected $_shipTs;
     protected $_insertTs;
     protected $_trackingNumber;
+    protected $_scanFormId;
     protected $_shirtSex;
     protected $_shirtSize;
     protected $_shirtType;
@@ -37,6 +38,7 @@ class Model_Recipient extends Model_Base_Db
             'verifiedAddress' => null,
             'shipTs' => null,
             'trackingNumber' => null,
+            'scanFormId' => null,
             'shirtSex' => null,
             'shirtSize' => null,
             'shirtType' => null,
@@ -57,6 +59,7 @@ class Model_Recipient extends Model_Base_Db
         $this->_verifiedAddress = $settings['verifiedAddress'];
         $this->_shipTs = $settings['shipTs'];
         $this->_trackingNumber = $settings['trackingNumber'];
+        $this->_scanFormId = $settings['scanFormId'];
         $this->_shirtSex = $settings['shirtSex'];
         $this->_shirtSize = $settings['shirtSize'];
         $this->_shirtType = $settings['shirtType'];
@@ -79,10 +82,12 @@ class Model_Recipient extends Model_Base_Db
         $this->_insertTs = $record->insert_ts;
         $this->_shipTs = $record->ship_ts;
         $this->_trackingNumber = $record->tracking_number;
+        $this->_scanFormId = $record->scan_form_id;
         $this->_shirtSex = $record->shirt_sex;
         $this->_shirtSize = $record->shirt_size;
         $this->_shirtType = $record->shirt_type;
         $this->_quantity = $record->quantity;
+        $this->_weight = isset($record->weight) ? $record->weight : null;
         $this->_total = $record->total;
     }
 
@@ -112,10 +117,12 @@ class Model_Recipient extends Model_Base_Db
               , r.insert_ts
               , r.ship_ts
               , r.tracking_number
+              , r.scan_form_id
               , r.shirt_sex
               , r.shirt_size
               , r.shirt_type
               , r.quantity
+              , r.weight
               , 1 AS total
             FROM recipient r
             $where LIMIT 1
@@ -150,6 +157,7 @@ class Model_Recipient extends Model_Base_Db
                   , verified_address
                   , ship_ts
                   , tracking_number
+                  , scan_form_id
                   , shirt_sex
                   , shirt_size
                   , shirt_type
@@ -168,6 +176,7 @@ class Model_Recipient extends Model_Base_Db
                   , COALESCE(:verifiedAddress, false)
                   , :shipTs
                   , :trackingNumber
+                  , :scanFormId
                   , UPPER(:shirtSex)
                   , UPPER(:shirtSize)
                   , UPPER(:shirtType)
@@ -178,6 +187,7 @@ class Model_Recipient extends Model_Base_Db
 
         $batchId = $this->convertToInt($this->_batchId);
         $quantity = $this->convertToInt($this->_quantity);
+        $scanFormId = $this->convertToInt($this->_scanFormId);
         $verifiedAddress = $this->convertFromBoolean($this->_verifiedAddress);
 
         $query->bindParam(':batchId', $batchId, PDO::PARAM_INT);
@@ -192,11 +202,11 @@ class Model_Recipient extends Model_Base_Db
         $query->bindParam(':verifiedAddress', $verifiedAddress, PDO::PARAM_BOOL);
         $query->bindParam(':shipTs', $this->_shipTs, PDO::PARAM_STR);
         $query->bindParam(':trackingNumber', $this->_trackingNumber, PDO::PARAM_STR);
+        $query->bindParam(':scanFormId', $scanFormId, PDO::PARAM_INT);
         $query->bindParam(':shirtSex', $this->_shirtSex, PDO::PARAM_STR);
         $query->bindParam(':shirtSize', $this->_shirtSize, PDO::PARAM_STR);
         $query->bindParam(':shirtType', $this->_shirtType, PDO::PARAM_STR);
         $query->bindParam(':quantity', $quantity, PDO::PARAM_INT);
-
 
         $result = $query->execute();
 
@@ -226,6 +236,7 @@ class Model_Recipient extends Model_Base_Db
                   , verified_address = COALESCE(:verifiedAddress, verified_address)
                   , ship_ts = COALESCE(:shipTs, ship_ts)
                   , tracking_number = COALESCE(:trackingNumber, tracking_number)
+                  , scan_form_id = COALESCE(:scanFormId, scan_form_id)
                   , shirt_sex = COALESCE(UPPER(:shirtSex), shirt_sex)
                   , shirt_size = COALESCE(UPPER(:shirtSize), shirt_sex)
                   , shirt_type = COALESCE(UPPER(:shirtType), shirt_type)
@@ -238,8 +249,8 @@ class Model_Recipient extends Model_Base_Db
         $recipientId = $this->convertToInt($this->_recipientId);
         $batchId = $this->convertToInt($this->_batchId);
         $quantity = $this->convertToInt($this->_quantity);
+        $scanFormId = $this->convertToInt($this->_scanFormId);
         $verifiedAddress = $this->convertFromBoolean($this->_verifiedAddress);
-
         $query->bindParam(':batchId', $batchId, PDO::PARAM_INT);
         $query->bindParam(':email', $this->_email, PDO::PARAM_STR);
         $query->bindParam(':firstName', $this->_firstName, PDO::PARAM_STR);
@@ -252,6 +263,7 @@ class Model_Recipient extends Model_Base_Db
         $query->bindParam(':verifiedAddress', $verifiedAddress, PDO::PARAM_BOOL);
         $query->bindParam(':shipTs', $this->_shipTs, PDO::PARAM_STR);
         $query->bindParam(':trackingNumber', $this->_trackingNumber, PDO::PARAM_STR);
+        $query->bindParam(':scanFormId', $scanFormId, PDO::PARAM_INT);
         $query->bindParam(':shirtSex', $this->_shirtSex, PDO::PARAM_STR);
         $query->bindParam(':shirtSize', $this->_shirtSize, PDO::PARAM_STR);
         $query->bindParam(':shirtType', $this->_shirtType, PDO::PARAM_STR);
@@ -291,13 +303,158 @@ class Model_Recipient extends Model_Base_Db
         $this->_addressLineTwo = isset($address['Address1']) ? $address['Address1'] : null;
         $this->_city = $address['City'];
         $this->_state = $address['State'];
-        $postal4 = isset($address['Zip4']) ? '-'.$address['Zip4'] : null;
-        $this->_postalCode = $address['Zip5'] . $postal4;
+        $this->_postalCode = $address['Zip5'];
         $this->_verifiedAddress = true;
 
         $this->update();
 
         return true;
+    }
+
+    public function generateStamp($forceNewStamp = false)
+    {
+        if(!$this->load()) {
+            throw new Zend_Exception('Unable to print stamp, no recipient found');
+        }
+
+        if($this->_shipTs && !$forceNewStamp) {
+            return true;
+        }
+
+        $label = new Darkhorse_Endicia_Client(array(
+            'requesterId' => Zend_Registry::get(ENDICIA_REQUESTER_ID)
+          , 'accountId' => Zend_Registry::get(ENDICIA_ACCOUNT_ID)
+          , 'passPhrase' => Zend_Registry::get(ENDICIA_PASSPHRASE)
+          , 'production' != APPLICATION_ENV
+        ));
+
+        $batch = new Model_Batch(array(
+            'batchId' => $this->_batchId
+        ));
+        $batch->load();
+
+        try {
+            $mailClass = $this->_weight > 8 ?
+                Darkhorse_Endicia_Client::SERVICE_PRIORITY :
+                Darkhorse_Endicia_Client::SERVICE_FIRST_CLASS;
+            $shirtCode = sprintf('[%s|%s|%s]', $this->_shirtSex, $this->_shirtSize, $this->_shirtType);
+            $response = $label->getLabel(array(
+                'mailClass' => $mailClass
+              , 'weightOunces' => $this->_weight
+              , 'value' => null
+              , 'toName' => "$this->_firstName $this->_lastName"
+              , 'toCompany' => null
+              , 'toAddress' => $this->_addressLineOne
+              , 'toAddress2' => $this->_addressLineTwo
+              , 'toCity' => $this->_city
+              , 'toState' => $this->_state
+              , 'toZip' => $this->_postalCode
+              , 'toCountry' => 'USA'
+              , 'toPhone' => null
+              , 'fromName' => $shirtCode . ' ' . $batch->getName()
+              , 'fromAddress' => trim($batch->getStreet() . ' ' .$batch->getSuiteApt())
+              , 'fromCity' => $batch->getCity()
+              , 'fromState' => $batch->getState()
+              , 'fromZip' => $batch->getZip()
+              , 'fromPhone' => null
+            ));
+
+            $this->_shipTs = date('Y-m-d', strtotime($response->PostmarkDate));
+            $this->_trackingNumber = $response->TrackingNumber;
+            $image = base64_decode($response->Base64LabelImage);
+            self::setFile($image);
+            self::update();
+
+        } catch(Zend_Exception $ze) {
+            //Unable to verify
+            return false;
+        }
+        return true;
+    }
+
+    private function setFile($file)
+    {
+        if(empty($this->_shipTs) || !is_numeric($this->_recipientId)) {
+            throw new Zend_Exception('Unable to create directory from null shipTs or id');
+        }
+
+        $path = sprintf('%s/%s/%s/%s'
+          , Zend_Registry::get(STAMPS_FILE_PATH)
+          , date('Y', strtotime($this->_shipTs))
+          , date('m', strtotime($this->_shipTs))
+          , date('d', strtotime($this->_shipTs))
+        );
+        if(!is_dir($path)) {
+            mkdir($path, 0777, true);
+        }
+        file_put_contents("$path/$this->_recipientId.gif", $file);
+    }
+
+    public function getStamp()
+    {
+        $filePath = sprintf('%s/%s/%s/%s/%s.gif'
+          , Zend_Registry::get(STAMPS_FILE_PATH)
+          , date('Y', strtotime($this->_shipTs))
+          , date('m', strtotime($this->_shipTs))
+          , date('d', strtotime($this->_shipTs))
+          , $this->_recipientId
+        );
+        if(!file_exists($filePath)) {
+            throw new Zend_Exception('Unable to locate file');
+        }
+        return file_get_contents($filePath);
+    }
+
+    public function cancelStamp()
+    {
+        if(!$this->load()) {
+            throw new Zend_Exception('Unable to cancel stamp, no recipient found');
+        }
+
+        // Is there a stamp to cancel
+        if(empty($this->_shipTs) || empty($this->_trackingNumber)) {
+            return false;
+        }
+
+        // Has the stamp been assigned to a scan form?
+        if(is_numeric($this->_scanFormId)) {
+            return false;
+        }
+
+        $label = new Darkhorse_Endicia_Client(array(
+            'requesterId' => Zend_Registry::get(ENDICIA_REQUESTER_ID)
+          , 'accountId' => Zend_Registry::get(ENDICIA_ACCOUNT_ID)
+          , 'passPhrase' => Zend_Registry::get(ENDICIA_PASSPHRASE)
+          , 'production' != APPLICATION_ENV
+        ));
+
+        $list = $label->cancelLabel(array($this->_trackingNumber));
+        if(in_array($this->_trackingNumber, $list['approved'])) {
+            $filePath = sprintf('%s/%s/%s/%s/%s.gif'
+              , Zend_Registry::get(STAMPS_FILE_PATH)
+              , date('Y', strtotime($this->_shipTs))
+              , date('m', strtotime($this->_shipTs))
+              , date('d', strtotime($this->_shipTs))
+              , $this->_recipientId
+            );
+            if(file_exists($filePath)) {
+                unlink($filePath);
+            }
+
+            $sql = '
+                UPDATE recipient SET
+                    ship_ts = null
+                  , tracking_number = null
+                WHERE recipient_id = :recipientId
+            ';
+            $query = $this->_db->prepare($sql);
+            $recipientId = $this->convertToInt($this->_recipientId);
+            $query->bindParam(':recipientId', $recipientId, PDO::PARAM_INT);
+            $result = $query->execute();
+            return (bool)$result;
+        } else {
+            return false;
+        }
     }
 
     //Setters
@@ -314,6 +471,7 @@ class Model_Recipient extends Model_Base_Db
     public function setVerifiedAddress($verifiedAddress){$this->_verifiedAddress = $verifiedAddress; return $this;}
     public function setShipTs($shipTs){$this->_shipTs = $shipTs; return $this;}
     public function setTrackingNumber($trackingNumber){$this->_trackingNumber = $trackingNumber; return $this;}
+    public function setScanFormId($scanFormId){$this->_scanFormId = $scanFormId; return $this;}
     public function setShirtSex($shirtSex){$this->_shirtSex = $shirtSex; return $this;}
     public function setShirtSize($shirtSize){$this->_shirtSize = $shirtSize; return $this;}
     public function setShirtType($shirtType){$this->_shirtType = $shirtType; return $this;}
@@ -334,9 +492,11 @@ class Model_Recipient extends Model_Base_Db
     public function getInsertTs(){return $this->_insertTs;}
     public function getShipTs(){return $this->_shipTs;}
     public function getTrackingNumber(){return $this->_trackingNumber;}
+    public function getScanFormId(){return $this->_scanFormId;}
     public function getShirtSex(){return $this->_shirtSex;}
     public function getShirtSize(){return $this->_shirtSize;}
     public function getShirtType(){return $this->_shirtType;}
     public function getQuantity(){return $this->_quantity;}
+    public function getWeight(){return $this->_weight;}
     public function getTotal(){return $this->_total;}
 }
