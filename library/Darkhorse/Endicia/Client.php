@@ -2,13 +2,16 @@
 
 class Darkhorse_Endicia_Client
 {
-    const WSDL_URL = 'http://www.envmgr.com/LabelService/EwsLabelService.asmx?wsdl';
-
+    const PROD_CORE_WSDL_URL = 'https://labelserver.endicia.com/LabelService/EwsLabelService.asmx?wsdl';
+    const PROD_SERVICES_WSDL_URL = 'https://www.endicia.com/ELS/ELSServices.cfc?wsdl';
+    const DEV_CORE_WSDL_URL = 'https://elstestserver.endicia.com/LabelService/EwsLabelService.asmx?wsdl';
+    const DEV_SERVICES_WSDL_URL = 'https://elstestserver.endicia.com/ELS/ELSServices.cfc?wsdl';
 
     const SERVICE_FIRST_CLASS = 'First';
     const SERVICE_PRIORITY = 'Priority';
 
-    private $_client;
+    private $_coreClient;
+    private $_serviceClient;
     private $_requesterId;
     private $_accountId;
     private $_passPhrase;
@@ -26,8 +29,26 @@ class Darkhorse_Endicia_Client
         $this->_accountId = $settings['accountId'];
         $this->_passPhrase = $settings['passPhrase'];
         $this->_isTestEnv = $settings['isTestEnv'] === true ? 'YES' : 'NO';
+        $this->_coreWsdl = $settings['isTestEnv'] ? self::PROD_CORE_WSDL_URL : self::DEV_CORE_WSDL_URL;
+        $this->_serviceWsdl = $settings['isTestEnv'] ? self::PROD_SERVICES_WSDL_URL : self::DEV_SERVICES_WSDL_URL;
+    }
 
-        $this->_client = new SoapClient(self::WSDL_URL, array('trace' => TRUE));
+    private function getCoreClient()
+    {
+        if(!$this->_coreClient) {
+          $this->_coreClient = new SoapClient($this->_coreWsdl);
+          $this->_coreClient->__setLocation($this->_coreWsdl);
+        }
+        return $this->_coreClient;
+    }
+
+    private function getServiceClient()
+    {
+        if(!$this->_serviceClient) {
+            $this->_serviceClient = new SoapClient($this->_serviceWsdl);
+            $this->_serviceClient->__setLocation($this->_serviceWsdl);
+        }
+        return $this->_serviceClient;
     }
 
     public function getLabel(array $options = array())
@@ -53,7 +74,7 @@ class Darkhorse_Endicia_Client
           , 'fromPhone' => null
         ), $options);
 
-        $return = $this->_client->GetPostageLabel(array('LabelRequest' => array(
+        $return = self::getCoreClient()->GetPostageLabel(array('LabelRequest' => array(
             'RequesterID' => $this->_requesterId
           , 'AccountID' => $this->_accountId
           , 'PassPhrase' => $this->_passPhrase
@@ -66,12 +87,12 @@ class Darkhorse_Endicia_Client
                 'CertifiedMail' => 'OFF'
               , 'DeliveryConfirmation' => 'OFF'
               , 'ElectronicReturnReceipt' => 'OFF'
-              , 'InsuredMail' => 'ENDICIA'
+              , 'InsuredMail' => 'OFF'
               , 'SignatureConfirmation' => 'OFF'
             )
           , 'Description' => 'Darkhorse Postage'
-          , 'PartnerCustomerID' => '12345ABCD'
-          , 'PartnerTransactionID' => '6789EFGH'
+          , 'PartnerCustomerID' => $this->_accountId
+          , 'PartnerTransactionID' => time()
           , 'OriginCountry' => 'United States'
           , 'ToName' => $params['toName']
           , 'ToCompany' => $params['toCompany']
@@ -120,14 +141,29 @@ class Darkhorse_Endicia_Client
         return $return->LabelRequestResponse;
     }
 
+    public function buyPostage()
+    {
+        $return = self::getCoreClient()->BuyPostage(array('RecreditRequest' => array(
+            'RequesterID' => $this->_requesterId
+          , 'RequestID' => time()
+          , 'CertifiedIntermediary' => array(
+              'AccountID' => $this->_accountId,
+              'PassPhrase' => $this->_passPhrase
+          )
+          , 'RecreditAmount' => 10
+        )));
+        var_dump($return); die;
+    }
+
+
     public function cancelLabel(array $trackingNumberIds = array())
     {
-        $return = $this->_client->GetRefund(array('RefundRequest' => array(
+        $return = self::getCoreClient()->GetRefund(array('RefundRequest' => array(
             'RequesterID' => $this->_requesterId
           , 'RequestID' => time()
           , 'AccountID' => $this->_accountId
           , 'PassPhrase' => $this->_passPhrase
-          , 'Test' => 'Y'
+          , 'Test' => $this->_isTestEnv
           , 'RefundList' => array(
                 'PICNumber' => $trackingNumberIds
           )
@@ -150,4 +186,46 @@ class Darkhorse_Endicia_Client
         }
         return $list;
     }
+
+    public function getScanForm(array $params = array())
+    {
+        $return = self::getCoreClient()->GetSCAN(array('SCANRequest' => array(
+            'RequesterID' => $this->_requesterId
+          , 'RequestID' => time()
+          , 'CertifiedIntermediary' => array(
+              'AccountID' => $this->_accountId,
+              'PassPhrase' => $this->_passPhrase
+          )
+          , 'Test' => $this->_isTestEnv
+          , 'FromName' => $params['fromName']
+          , 'FromAddress' => $params['fromAddress']
+          , 'FromCity' => $params['fromCity']
+          , 'FromState' => $params['fromState']
+          , 'FromZipCode' => $params['fromZip']
+          , 'SCANList' => array(
+                'PICNumber' => $params['trackingNumbers']
+          )
+        )));
+
+
+        echo $this->_client->__getLastRequest();
+        echo $this->_client->__getLastResponse();
+        var_dump($return); die;
+        return $return;
+    }
+
+    public function getAccountStatus()
+    {
+        $return = self::getCoreClient()->GetAccountStatus(array('AccountStatusRequest' => array(
+            'RequesterID' => $this->_requesterId
+          , 'RequestID' => time()
+          , 'CertifiedIntermediary' => array(
+              'AccountID' => $this->_accountId,
+              'PassPhrase' => $this->_passPhrase
+          )
+        )));
+
+        return $return;
+    }
 }
+

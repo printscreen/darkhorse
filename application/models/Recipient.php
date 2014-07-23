@@ -325,7 +325,7 @@ class Model_Recipient extends Model_Base_Db
             'requesterId' => Zend_Registry::get(ENDICIA_REQUESTER_ID)
           , 'accountId' => Zend_Registry::get(ENDICIA_ACCOUNT_ID)
           , 'passPhrase' => Zend_Registry::get(ENDICIA_PASSPHRASE)
-          , 'production' != APPLICATION_ENV
+          , 'isTestEnv' => 'production' != APPLICATION_ENV
         ));
 
         $batch = new Model_Batch(array(
@@ -366,6 +366,7 @@ class Model_Recipient extends Model_Base_Db
             self::update();
 
         } catch(Zend_Exception $ze) {
+          echo $ze->getMessage(); die;
             //Unable to verify
             return false;
         }
@@ -425,7 +426,7 @@ class Model_Recipient extends Model_Base_Db
             'requesterId' => Zend_Registry::get(ENDICIA_REQUESTER_ID)
           , 'accountId' => Zend_Registry::get(ENDICIA_ACCOUNT_ID)
           , 'passPhrase' => Zend_Registry::get(ENDICIA_PASSPHRASE)
-          , 'production' != APPLICATION_ENV
+          , 'isTestEnv' => 'production' != APPLICATION_ENV
         ));
 
         $list = $label->cancelLabel(array($this->_trackingNumber));

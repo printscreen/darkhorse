@@ -316,8 +316,8 @@ Darkhorse.prototype.modules.recipient = function (base, index) {
         $.ajax({
             url: '/recipient/verify',
             dataType: 'json',
-            data: function () {
-                return $('#recipient-form select[name="batch"]').val();
+            data: {
+                batchId : $('#recipient-form select[name="batch"]').val()
             },
             beforeSend: function () {
                 forceProgressTrackingStop = false;

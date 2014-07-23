@@ -361,6 +361,145 @@ class Model_Recipients extends Model_Base_Db
         return true;
     }
 
+    public function getScanFormAvailableRecipients($scanFormId)
+    {
+        $sql = "SELECT
+                r.recipient_id
+              , r.batch_id
+              , r.email
+              , r.first_name
+              , r.last_name
+              , r.address_line_one
+              , r.address_line_two
+              , r.city
+              , r.state
+              , r.postal_code
+              , r.verified_address
+              , r.insert_ts
+              , r.ship_ts
+              , r.tracking_number
+              , r.scan_form_id
+              , r.shirt_sex
+              , r.shirt_size
+              , r.shirt_type
+              , r.quantity
+              , ( SELECT
+                    count(*)
+                  FROM recipient r
+                  INNER JOIN scan_form sf USING (batch_id)
+                  WHERE r.scan_form_id IS NULL
+                  AND r.tracking_number IS NOT NULL
+                  AND r.ship_ts IS NOT NULL
+                  AND sf.scan_form_id = :scanFormId
+                ) AS total
+            FROM recipient r
+            INNER JOIN scan_form sf USING (batch_id)
+            WHERE r.scan_form_id IS NULL
+            AND r.tracking_number IS NOT NULL
+            AND r.ship_ts IS NOT NULL
+            AND sf.scan_form_id = :scanFormId
+            ORDER BY tracking_number ASC
+        ";
+
+        $query = $this->_db->prepare($sql);
+        $scanFormId = $this->convertToInt($scanFormId);
+        $query->bindParam(':scanFormId', $scanFormId, PDO::PARAM_INT);
+        $query->execute();
+
+        $this->_recipients = array();
+        while($result = $query->fetch()) {
+            $recipient = new Model_Recipient();
+            $recipient->loadRecord($result);
+            $this->_recipients[] = $recipient;
+        }
+
+        return $this->_recipients;
+    }
+
+    public function getScanFormRecipients($scanFormId)
+    {
+        $sql = "SELECT
+                r.recipient_id
+              , r.batch_id
+              , r.email
+              , r.first_name
+              , r.last_name
+              , r.address_line_one
+              , r.address_line_two
+              , r.city
+              , r.state
+              , r.postal_code
+              , r.verified_address
+              , r.insert_ts
+              , r.ship_ts
+              , r.tracking_number
+              , r.scan_form_id
+              , r.shirt_sex
+              , r.shirt_size
+              , r.shirt_type
+              , r.quantity
+              , ( SELECT
+                    count(*)
+                  FROM recipient r
+                  WHERE r.scan_form_id = :scanFormId
+                ) AS total
+            FROM recipient r
+            WHERE r.scan_form_id = :scanFormId
+            ORDER BY r.tracking_number ASC
+        ";
+
+        $query = $this->_db->prepare($sql);
+        $scanFormId = $this->convertToInt($scanFormId);
+        $query->bindParam(':scanFormId', $scanFormId, PDO::PARAM_INT);
+        $query->execute();
+
+        $this->_recipients = array();
+        while($result = $query->fetch()) {
+            $recipient = new Model_Recipient();
+            $recipient->loadRecord($result);
+            $this->_recipients[] = $recipient;
+        }
+
+        return $this->_recipients;
+    }
+
+    public function setScanFormRecipients($scanFormId, $toAdd, $toDelete)
+    {
+        $scanFormId = $this->convertToInt($scanFormId);
+        $this->_db->beginTransaction();
+
+        if(is_array($toAdd) && !empty($toAdd)) {
+            $sql = "UPDATE recipient r
+                    SET r.scan_form_id = :scanFormId
+                    WHERE r.recipient_id IN (". $this->arrayToIn($toAdd).")";
+
+            $query = $this->_db->prepare($sql);
+            $binds = array();
+            $binds[':scanFormId'] = array('value' => $scanFormId, 'type' => PDO::PARAM_INT);
+            foreach($toAdd as $key => $recipient) {
+                $binds[':'.$recipient] = array('value' => $recipient, 'type' => PDO::PARAM_INT);
+            }
+            $this->bind($query, $binds);
+            $query->execute();
+        }
+
+        if(is_array($toDelete) && !empty($toDelete)) {
+            $sql = "UPDATE recipient
+                    SET scan_form_id = NULL
+                    WHERE recipient_id IN (". $this->arrayToIn($toDelete).")";
+            $query = $this->_db->prepare($sql);
+            $binds = array();
+            foreach($toDelete as $key => $recipient) {
+                $binds[':'.$recipient] = array('value' => $recipient, 'type' => PDO::PARAM_INT);
+            }
+            $this->bind($query, $binds);
+            $query->execute();
+        }
+
+        $this->_db->commit();
+        return true;
+    }
+
     public function toArray()
     {
         $recipients = array();
@@ -455,3 +594,4 @@ class Model_Recipients extends Model_Base_Db
         }
     }
 }
+

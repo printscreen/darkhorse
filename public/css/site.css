@@ -25,3 +25,12 @@ table .pagination {
 #prepare-table .form-inline .pull-left {
     width: 90px;
 }
+#manage-recipients select {
+    height: 400px;
+}
+#manage-recipients .scan-form-controls {
+    margin-top: 155px;
+}
+#manage-recipients .row .scan-form-controls a {
+    margin-top: 10px;
+}

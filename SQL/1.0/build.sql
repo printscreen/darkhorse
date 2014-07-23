@@ -61,6 +61,16 @@ VALUES
 ,   ('default:postage:get-recipient')
 ,   ('default:postage:generate-stamp')
 ,   ('default:postage:cancel-stamp')
+,   ('default:scanform:view')
+,   ('default:scanform:print')
+,   ('default:scanform:get-recipient')
+,   ('default:scanform:generate-form')
+,   ('default:scanform:get-form')
+,   ('default:scanform:index')
+,   ('default:scanform:edit')
+,   ('default:scanform:edit-recipient')
+,   ('default:account:get-status')
+,   ('default:account:buy-postage')
 ;
 
 CREATE TABLE user_type_resource (
@@ -107,7 +117,17 @@ VALUES
     (29,1), -- default:postage:print
     (30,1), -- default:postage:get-recipient
     (31,1), -- default:postage:generate-stamp
-    (32,1) -- default:postage:cancel-stamp
+    (32,1), -- default:postage:cancel-stamp
+    (33,1), -- default:scanform:view
+    (34,1), -- default:scanform:print
+    (35,1), -- default:scanform:get-recipient
+    (36,1), -- default:scanform:generate-form
+    (37,1), -- default:scanform:get-form
+    (38,1), -- default:scanform:index
+    (39,1), -- default:scanform:edit
+    (40,1), -- default:scanform:edit-recipient
+    (41,1), -- defualt:account:get-status
+    (42,1) -- default:account:buy-postage
 ;
 
 CREATE TABLE customer (
@@ -138,8 +158,13 @@ CREATE TABLE batch (
 
 CREATE TABLE scan_form (
     scan_form_id        INT(10)         NOT NULL auto_increment,
-    insert_ts           TIMESTAMP       NOT NULL,
-    PRIMARY KEY(scan_form_id)
+    batch_id            INT(10)         NOT NULL,
+    name                VARCHAR(255)    NOT NULL,
+    insert_ts           TIMESTAMP       NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    is_generated        BOOLEAN         NOT NULL DEFAULT false,
+    PRIMARY KEY(scan_form_id),
+    FOREIGN KEY (batch_id) REFERENCES batch(batch_id),
+    CONSTRAINT uc_batch_id_name UNIQUE (name, batch_id)
 );
 
 CREATE TABLE recipient (
