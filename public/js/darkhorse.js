@@ -13,6 +13,7 @@ var Darkhorse = function (parameters) {
                 self.modules[index].dispatch();
             });
         }
+
         // Alert and redirect on session timeout
         $.ajaxPrefilter(function (options) {
             var originalSuccess = options.success,
@@ -56,6 +57,15 @@ var Darkhorse = function (parameters) {
                 }
             };
         });
+
+        $('#make-purchase').click(function() {
+            self.makePurchase(
+                $('#add-funds form')
+            );
+        });
+
+        self.getAccountBalance();
+
     };
 
     this.displayFormErrors = function (form, errors) {
@@ -69,6 +79,45 @@ var Darkhorse = function (parameters) {
         $.each(form.find(':input'), function(key,val){
             $(val).closest('.form-group').removeClass('has-error');
             $(val).closest('.form-group').find('.help-block').html('');
+        });
+    };
+
+    this.getAccountBalance = function (callback) {
+        $.ajax({
+            url: '/account/get-status',
+            type: 'POST',
+            dataType: 'json',
+            success: function(data) {
+                $('#account-balance span').html('$'+data.balance);
+                if(typeof callback === 'function') {
+                    callback();
+                }
+            },
+            error: function (response, status) {
+                console.log(response, status);
+            }
+        });
+    };
+
+    this.makePurchase = function (form) {
+        $.ajax({
+            url: '/account/buy-postage',
+            type: 'POST',
+            dataType: 'json',
+            data: form.serialize(),
+            beforeSend: function () {
+                $('#make-purchase').prop('disabled', true);
+            },
+            success: function(data) {
+                self.getAccountBalance();
+                $('#add-funds').modal('hide')
+            },
+            complete: function () {
+                $('#make-purchase').prop('disabled', false);
+            },
+            error: function (response, status) {
+                console.log(response, status);
+            }
         });
     };
 

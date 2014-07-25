@@ -2,13 +2,6 @@
 class Model_Account extends Model_Base_Base
 {
     private $_cache;
-    protected $_accountId;
-    protected $_serialNumber;
-    protected $_postageBalance;
-    protected $_ascendingBalance;
-    protected $_accountStatus;
-    protected $_deviceId;
-    protected $_referenceId;
 
     public function __construct(array $options = array())
     {
@@ -17,26 +10,10 @@ class Model_Account extends Model_Base_Base
 
     public function getAccountBalance()
     {
-        $accountBalance = $this->_cache->load('account');
-        if(is_null($accountBalance) || !is_numeric($accountBalance)) {
-            $accountBalance = $this->_query();
+        $accountBalance = $this->_cache->load('account_balance');
+        if(!is_null($accountBalance) && is_numeric($accountBalance)) {
+            return $accountBalance;
         }
-        return $accountBalance;
-    }
-
-    public function buyPostage()
-    {
-        $account = new Darkhorse_Endicia_Client(array(
-            'requesterId' => Zend_Registry::get(ENDICIA_REQUESTER_ID)
-          , 'accountId' => Zend_Registry::get(ENDICIA_ACCOUNT_ID)
-          , 'passPhrase' => Zend_Registry::get(ENDICIA_PASSPHRASE)
-          , 'isTestEnv' => 'production' != APPLICATION_ENV
-        ));
-        $result = $account->buyPostage();
-    }
-
-    private function _query()
-    {
         $account = new Darkhorse_Endicia_Client(array(
             'requesterId' => Zend_Registry::get(ENDICIA_REQUESTER_ID)
           , 'accountId' => Zend_Registry::get(ENDICIA_ACCOUNT_ID)
@@ -44,20 +21,37 @@ class Model_Account extends Model_Base_Base
           , 'production' != APPLICATION_ENV
         ));
         $result = $account->getAccountStatus();
-        if(!isset($result->AccountStatusResponse->CertifiedIntermediary)) {
-            throw new Zend_Exception('Unable to get account status');
+        if(isset($result->AccountStatusResponse->ErrorMessage)) {
+            throw new Zend_Exception($result->AccountStatusResponse->ErrorMessage);
         }
-        $account = $result->AccountStatusResponse->CertifiedIntermediary;
-        $this->_accountId = $account->AccountID;
-        $this->_serialNumber = $account->SerialNumber;
-        $this->_postageBalance = $account->PostageBalance;
-        $this->_ascendingBalance = $account->AscendingBalance;
-        $this->_accountStatus = $account->AccountStatus;
-        $this->_deviceId = $account->DeviceID;
-        $this->_referenceId = $account->ReferenceID;
 
-        $status = $this->toArray();
-        $this->_cache->save($status, 'account');
-        return $status;
+        $this->_cache->save(
+            $result->AccountStatusResponse->CertifiedIntermediary->PostageBalance
+          , 'account_balance'
+        );
+
+        return $result->AccountStatusResponse->CertifiedIntermediary->PostageBalance;
+    }
+
+    public function buyPostage($amount)
+    {
+        $account = new Darkhorse_Endicia_Client(array(
+            'requesterId' => Zend_Registry::get(ENDICIA_REQUESTER_ID)
+          , 'accountId' => Zend_Registry::get(ENDICIA_ACCOUNT_ID)
+          , 'passPhrase' => Zend_Registry::get(ENDICIA_PASSPHRASE)
+          , 'isTestEnv' => 'production' != APPLICATION_ENV
+        ));
+        $result = $account->buyPostage($amount);
+
+        if(isset($result->RecreditRequestResponse->ErrorMessage)) {
+            throw new Zend_Exception($result->RecreditRequestResponse->ErrorMessage);
+        }
+
+        $this->_cache->save(
+            $result->RecreditRequestResponse->CertifiedIntermediary->PostageBalance
+          , 'account_balance'
+        );
+
+        return $result->RecreditRequestResponse->CertifiedIntermediary->PostageBalance;
     }
 }

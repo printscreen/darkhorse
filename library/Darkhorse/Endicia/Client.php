@@ -29,15 +29,15 @@ class Darkhorse_Endicia_Client
         $this->_accountId = $settings['accountId'];
         $this->_passPhrase = $settings['passPhrase'];
         $this->_isTestEnv = $settings['isTestEnv'] === true ? 'YES' : 'NO';
-        $this->_coreWsdl = $settings['isTestEnv'] ? self::PROD_CORE_WSDL_URL : self::DEV_CORE_WSDL_URL;
-        $this->_serviceWsdl = $settings['isTestEnv'] ? self::PROD_SERVICES_WSDL_URL : self::DEV_SERVICES_WSDL_URL;
+        $this->_coreWsdl = $settings['isTestEnv'] ? self::DEV_CORE_WSDL_URL : self::PROD_CORE_WSDL_URL;
+        $this->_serviceWsdl = $settings['isTestEnv'] ? self::DEV_SERVICES_WSDL_URL : self::PROD_SERVICES_WSDL_URL;
     }
 
     private function getCoreClient()
     {
         if(!$this->_coreClient) {
           $this->_coreClient = new SoapClient($this->_coreWsdl);
-          $this->_coreClient->__setLocation($this->_coreWsdl);
+          $this->_coreClient->__setLocation('https://elstestserver.endicia.com/LabelService/EwsLabelService.asmx?wsdl');
         }
         return $this->_coreClient;
     }
@@ -141,7 +141,7 @@ class Darkhorse_Endicia_Client
         return $return->LabelRequestResponse;
     }
 
-    public function buyPostage()
+    public function buyPostage($amount)
     {
         $return = self::getCoreClient()->BuyPostage(array('RecreditRequest' => array(
             'RequesterID' => $this->_requesterId
@@ -150,9 +150,9 @@ class Darkhorse_Endicia_Client
               'AccountID' => $this->_accountId,
               'PassPhrase' => $this->_passPhrase
           )
-          , 'RecreditAmount' => 10
+          , 'RecreditAmount' => $amount
         )));
-        var_dump($return); die;
+        return $return;
     }
 
 
@@ -207,10 +207,6 @@ class Darkhorse_Endicia_Client
           )
         )));
 
-
-        echo $this->_client->__getLastRequest();
-        echo $this->_client->__getLastResponse();
-        var_dump($return); die;
         return $return;
     }
 
