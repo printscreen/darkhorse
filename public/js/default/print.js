@@ -120,6 +120,7 @@ Darkhorse.prototype.modules.print = function (base, index) {
     };
 
     methods.printStamp = function (recipientId, callback) {
+        callback(); return;
         window.qzDoneAppending = function() {
             // Tell the applet to print PostScript.
             methods.getPrinter().printPS();

@@ -36,8 +36,8 @@ class Darkhorse_Endicia_Client
     private function getCoreClient()
     {
         if(!$this->_coreClient) {
-          $this->_coreClient = new SoapClient($this->_coreWsdl);
-          $this->_coreClient->__setLocation('https://elstestserver.endicia.com/LabelService/EwsLabelService.asmx?wsdl');
+          $this->_coreClient = new SoapClient($this->_coreWsdl, array('trace'=>1));
+          $this->_coreClient->__setLocation($this->_coreWsdl);
         }
         return $this->_coreClient;
     }
@@ -45,7 +45,7 @@ class Darkhorse_Endicia_Client
     private function getServiceClient()
     {
         if(!$this->_serviceClient) {
-            $this->_serviceClient = new SoapClient($this->_serviceWsdl);
+            $this->_serviceClient = new SoapClient($this->_serviceWsdl, array('trace'=>1));
             $this->_serviceClient->__setLocation($this->_serviceWsdl);
         }
         return $this->_serviceClient;
@@ -125,7 +125,7 @@ class Darkhorse_Endicia_Client
           , 'CustomsQuantity5' => 0
           , 'CustomsValue5' => 0
           , 'CustomsWeight5' => 0
-          , 'Test' => $this->_isTestEnv
+
           , 'LabelSize' => '4x6'
           , 'LabelType' => 'Default'
           , 'ImageFormat' => 'GIF'
@@ -192,21 +192,29 @@ class Darkhorse_Endicia_Client
         $return = self::getCoreClient()->GetSCAN(array('SCANRequest' => array(
             'RequesterID' => $this->_requesterId
           , 'RequestID' => time()
+          , 'AccountID' => $this->_accountId
+          , 'PassPhrase' => $this->_passPhrase
           , 'CertifiedIntermediary' => array(
               'AccountID' => $this->_accountId,
               'PassPhrase' => $this->_passPhrase
           )
-          , 'Test' => $this->_isTestEnv
+          , 'ImageFormat' => 'GIF'
+          , 'FormType' => 5630
+          , 'DPI' => 96
+          , 'SearchZip' => 98133
           , 'FromName' => $params['fromName']
           , 'FromAddress' => $params['fromAddress']
+          , 'FromCompany' => 'Darkhorse'
           , 'FromCity' => $params['fromCity']
           , 'FromState' => $params['fromState']
           , 'FromZipCode' => $params['fromZip']
+          , 'PICNumbers' => $params['trackingNumbers']
           , 'SCANList' => array(
                 'PICNumber' => $params['trackingNumbers']
           )
         )));
-
+       $moo =  $this->_coreClient->__getLastRequest(); var_dump($moo); die;
+var_dump($return);die;
         return $return;
     }
 

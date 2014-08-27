@@ -189,3 +189,9 @@ $.fn.delayKeyup = function(callback, ms){
     });
     return $(this);
 };
+window.qzReady = function () {
+    console.log('READY');
+}
+window.qzDoneFinding = function () {
+    console.log('DONE FINDING');
+}
